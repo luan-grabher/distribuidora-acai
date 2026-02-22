@@ -24,7 +24,7 @@ export default function Products() {
               mb: 1,
             }}
           >
-            Cardápio
+            {siteConfig.products.overline}
           </Typography>
           <Typography
             variant="h2"

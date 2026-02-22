@@ -38,7 +38,7 @@ export default function Benefits() {
               mb: 1,
             }}
           >
-            Diferenciais
+            {siteConfig.benefits.overline}
           </Typography>
           <Typography
             variant="h2"

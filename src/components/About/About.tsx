@@ -33,7 +33,7 @@ export default function About() {
                 mb: 1,
               }}
             >
-              Quem Somos
+              {siteConfig.about.overline}
             </Typography>
 
             <Typography

@@ -39,6 +39,7 @@ export const siteConfig = {
     ctaSecondaryText: 'Conheça Nossos Produtos',
   },
   about: {
+    overline: 'Quem Somos',
     title: 'Nossa História',
     description: 'A Miquinho Distribuidora nasceu do amor pelo açaí genuíno. Somos produtores diretos, cultivando e processando nosso próprio açaí com rigorosos controles de qualidade. Nossa missão é levar o sabor autêntico da Amazônia para cada açaiteria parceira, garantindo frescor, consistência e o melhor preço do mercado.',
     stats: [
@@ -49,6 +50,7 @@ export const siteConfig = {
     ],
   },
   products: {
+    overline: 'Cardápio',
     title: 'Nossos Produtos',
     subtitle: 'Linha completa para sua açaiteria',
     items: [
@@ -61,6 +63,7 @@ export const siteConfig = {
     ],
   },
   benefits: {
+    overline: 'Diferenciais',
     title: 'Por Que Escolher a Miquinho?',
     subtitle: 'Somos mais que um fornecedor — somos seu parceiro de negócios',
     items: [
