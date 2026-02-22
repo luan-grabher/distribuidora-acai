@@ -8,7 +8,7 @@ export const siteConfig = {
     instagram: '@miquinhodistribuidora',
   },
   logo: {
-    url: '/logo.png',
+    url: '/miquinho-distribuidora.jpeg',
     alt: 'Miquinho Distribuidora Logo',
     width: 120,
     height: 120,
@@ -54,10 +54,10 @@ export const siteConfig = {
     title: 'Nossos Produtos',
     subtitle: 'Linha completa para sua açaiteria',
     items: [
-      { name: 'Açaí Polpa Premium', description: 'Polpa pura e cremosa, ideal para servir com frutas e complementos. Textura perfeita e sabor intenso da Amazônia.', emoji: '🫐' },
-      { name: 'Açaí Cremoso', description: 'Açaí já preparado com a cremosidade ideal, pronto para servir. A escolha certa para quem busca praticidade sem abrir mão da qualidade.', emoji: '🍨' },
-      { name: 'Açaí com Frutas', description: 'Blend especial com frutas selecionadas. Morango, banana e outras frutas tropicais que complementam o sabor único do açaí.', emoji: '🍓' },
-      { name: 'Granola Premium', description: 'Granola crocante e saborosa, produzida especialmente para complementar seu açaí. Mix com castanhas, aveia e mel.', emoji: '🥣' },
+      //{ name: 'Açaí Polpa Premium', description: 'Polpa pura e cremosa, ideal para servir com frutas e complementos. Textura perfeita e sabor intenso da Amazônia.', emoji: '🫐' },
+      { name: 'Açaí Cremoso', description: 'Açaí já preparado com a cremosidade ideal, pronto para servir. A escolha certa para quem busca praticidade sem abrir mão da qualidade.', emoji: '🫐' },
+      //{ name: 'Açaí com Frutas', description: 'Blend especial com frutas selecionadas. Morango, banana e outras frutas tropicais que complementam o sabor único do açaí.', emoji: '🍓' },
+      //{ name: 'Granola Premium', description: 'Granola crocante e saborosa, produzida especialmente para complementar seu açaí. Mix com castanhas, aveia e mel.', emoji: '🥣' },
       { name: 'Leite Condensado', description: 'Leite condensado de alta qualidade para adoçar e enriquecer seus açaís. Embalagem prática para uso profissional.', emoji: '🥛' },
       { name: 'Complementos Variados', description: 'Kit completo com complementos selecionados: paçoca, Nutella, mel, coco ralado e muito mais para diversificar seu cardápio.', emoji: '🍯' },
     ],
