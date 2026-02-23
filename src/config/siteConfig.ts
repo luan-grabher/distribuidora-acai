@@ -8,7 +8,7 @@ export const siteConfig = {
     instagram: '@miquinhodistribuidora',
   },
   logo: {
-    url: '/miquinho-distribuidora.jpeg',
+    url: '/logo-com-espaço.png',
     alt: 'Miquinho Distribuidora Logo',
     width: 120,
     height: 120,

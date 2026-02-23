@@ -127,7 +127,7 @@ export default function Hero() {
 
           <Box
             sx={{
-              flex: { xs: 'none', md: '0 0 400px' },
+              flex: { xs: 'none', md: '0 0 520px' },
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -135,9 +135,10 @@ export default function Hero() {
           >
             <Box
               sx={{
-                width: { xs: 240, md: 320 },
-                height: { xs: 240, md: 320 },
+                width: { xs: 300, md: 460 },
+                height: { xs: 300, md: 460 },
                 borderRadius: '50%',
+                overflow: 'hidden',
                 background: 'rgba(255,255,255,0.1)',
                 backdropFilter: 'blur(10px)',
                 border: `3px solid rgba(249, 199, 21, 0.4)`,
@@ -150,9 +151,9 @@ export default function Hero() {
               <Image
                 src={siteConfig.logo.url}
                 alt={siteConfig.logo.alt}
-                width={260}
-                height={260}
-                style={{ borderRadius: '50%', objectFit: 'cover' }}
+                width={420}
+                height={420}
+                style={{ width: '110%', height: '110%', borderRadius: '50%', objectFit: 'cover', objectPosition: '50% 45%' }}
               />
             </Box>
           </Box>
