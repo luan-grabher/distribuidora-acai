@@ -3,7 +3,7 @@ export const siteConfig = {
     name: 'Miquinho Distribuidora',
     tagline: 'Do Coração da Amazônia Para Sua Açaiteria',
     description: 'Produzimos nosso próprio açaí com qualidade e tradição, entregando frescor e sabor incomparável para sua açaiteria.',
-    whatsapp: '(51) 99766-8057',
+    whatsapp: '+55 (51) 99766-8057',
     email: 'contato@miquinho.com.br',
     instagram: '@miquinhodistribuidora',
   },
