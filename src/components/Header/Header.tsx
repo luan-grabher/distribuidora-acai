@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Box from '@mui/material/Box'
@@ -21,6 +22,8 @@ import { siteConfig } from '@/config/siteConfig'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const pathname = usePathname()
+  const isHome = pathname === '/'
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -49,7 +52,17 @@ export default function Header() {
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', py: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box
+            component={Link}
+            href="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              cursor: 'pointer',
+              textDecoration: 'none',
+            }}
+          >
             <Image
               src={siteConfig.logo.url}
               alt={siteConfig.logo.alt}
@@ -71,10 +84,27 @@ export default function Header() {
           </Box>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, alignItems: 'center' }}>
-            {siteConfig.nav.links.map((link) => (
+            {isHome ? (
+              siteConfig.nav.links.map((link) => (
+                <Button
+                  key={link.href}
+                  onClick={() => handleNavClick(link.href)}
+                  sx={{
+                    color: siteConfig.colors.textLight,
+                    fontWeight: 500,
+                    '&:hover': {
+                      background: 'rgba(255,255,255,0.15)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  {link.label}
+                </Button>
+              ))
+            ) : (
               <Button
-                key={link.href}
-                onClick={() => handleNavClick(link.href)}
+                component={Link}
+                href="/"
                 sx={{
                   color: siteConfig.colors.textLight,
                   fontWeight: 500,
@@ -84,9 +114,9 @@ export default function Header() {
                   transition: 'all 0.3s ease',
                 }}
               >
-                {link.label}
+                Início
               </Button>
-            ))}
+            )}
             <Button
               component={Link}
               href={siteConfig.nav.catalogoHref}
@@ -134,16 +164,27 @@ export default function Header() {
           </IconButton>
         </Box>
         <List>
-          {siteConfig.nav.links.map((link) => (
-            <ListItem key={link.href} disablePadding>
-              <ListItemButton onClick={() => handleNavClick(link.href)}>
+          {isHome ? (
+            siteConfig.nav.links.map((link) => (
+              <ListItem key={link.href} disablePadding>
+                <ListItemButton onClick={() => handleNavClick(link.href)}>
+                  <ListItemText
+                    primary={link.label}
+                    sx={{ color: siteConfig.colors.textLight }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))
+          ) : (
+            <ListItem disablePadding>
+              <ListItemButton component={Link} href="/" onClick={() => setDrawerOpen(false)}>
                 <ListItemText
-                  primary={link.label}
+                  primary="Início"
                   sx={{ color: siteConfig.colors.textLight }}
                 />
               </ListItemButton>
             </ListItem>
-          ))}
+          )}
           <ListItem disablePadding>
             <ListItemButton component={Link} href={siteConfig.nav.catalogoHref} onClick={() => setDrawerOpen(false)}>
               <ListItemText
