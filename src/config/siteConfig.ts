@@ -30,6 +30,7 @@ export const siteConfig = {
       { label: 'Benefícios', href: '#benefits' },
       { label: 'Contato', href: '#contact' },
     ],
+    catalogoHref: '/catalogo',
   },
   hero: {
     title: 'Do Coração da Amazônia',
