@@ -130,7 +130,7 @@ export default function Header() {
                 '&:hover': { bgcolor: '#e6b400' },
               }}
             >
-              Cardápio
+              Catálogo
             </Button>
           </Box>
 
@@ -188,7 +188,7 @@ export default function Header() {
           <ListItem disablePadding>
             <ListItemButton component={Link} href={siteConfig.nav.catalogoHref} onClick={() => setDrawerOpen(false)}>
               <ListItemText
-                primary="Cardápio"
+                primary="Catálogo"
                 sx={{ color: siteConfig.colors.accent, fontWeight: 700 }}
               />
             </ListItemButton>

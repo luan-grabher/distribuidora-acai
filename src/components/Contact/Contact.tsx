@@ -121,7 +121,7 @@ export default function Contact() {
               transition: 'all 0.3s ease',
             }}
           >
-            Ver Cardápio
+            Ver Catálogo
           </Button>
         </Box>
 

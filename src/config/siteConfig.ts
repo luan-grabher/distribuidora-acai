@@ -51,7 +51,7 @@ export const siteConfig = {
     ],
   },
   products: {
-    overline: 'Cardápio',
+    overline: 'Catálogo',
     title: 'Nossos Produtos',
     subtitle: 'Linha completa para sua açaiteria',
     items: [

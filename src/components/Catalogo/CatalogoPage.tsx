@@ -44,7 +44,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
           color="white"
           sx={{ fontSize: { xs: '2rem', md: '3rem' }, mb: 1 }}
         >
-          Cardápio
+          Catálogo
         </Typography>
         <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.85)', fontWeight: 400 }}>
           Escolha os produtos para o seu pedido
