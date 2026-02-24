@@ -3,6 +3,7 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
+import Button from '@mui/material/Button'
 import CardContent from '@mui/material/CardContent'
 import { siteConfig } from '@/config/siteConfig'
 
@@ -88,6 +89,13 @@ export default function Products() {
             </Grid>
           ))}
         </Grid>
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Box component="a" href="/catalogo" sx={{ textDecoration: 'none' }}>
+            <Button component="span" variant="outlined" sx={{ textTransform: 'none' }}>
+              Veja nosso catálogo completo
+            </Button>
+          </Box>
+        </Box>
       </Container>
     </Box>
   )
