@@ -13,7 +13,9 @@ import ListItemButton from '@mui/material/ListItemButton'
 import ListItemText from '@mui/material/ListItemText'
 import MenuIcon from '@mui/icons-material/Menu'
 import CloseIcon from '@mui/icons-material/Close'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
 import Image from 'next/image'
+import Link from 'next/link'
 import { siteConfig } from '@/config/siteConfig'
 
 export default function Header() {
@@ -68,7 +70,7 @@ export default function Header() {
             </Box>
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, alignItems: 'center' }}>
             {siteConfig.nav.links.map((link) => (
               <Button
                 key={link.href}
@@ -85,6 +87,21 @@ export default function Header() {
                 {link.label}
               </Button>
             ))}
+            <Button
+              component={Link}
+              href={siteConfig.nav.catalogoHref}
+              variant="contained"
+              startIcon={<MenuBookIcon />}
+              sx={{
+                ml: 1,
+                bgcolor: siteConfig.colors.accent,
+                color: siteConfig.colors.text,
+                fontWeight: 700,
+                '&:hover': { bgcolor: '#e6b400' },
+              }}
+            >
+              Cardápio
+            </Button>
           </Box>
 
           <IconButton
@@ -127,6 +144,14 @@ export default function Header() {
               </ListItemButton>
             </ListItem>
           ))}
+          <ListItem disablePadding>
+            <ListItemButton component={Link} href={siteConfig.nav.catalogoHref} onClick={() => setDrawerOpen(false)}>
+              <ListItemText
+                primary="Cardápio"
+                sx={{ color: siteConfig.colors.accent, fontWeight: 700 }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
       </Drawer>
     </>

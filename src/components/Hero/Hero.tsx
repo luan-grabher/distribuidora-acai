@@ -5,6 +5,8 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Image from 'next/image'
+import Link from 'next/link'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
 import { siteConfig } from '@/config/siteConfig'
 
 export default function Hero() {
@@ -121,6 +123,28 @@ export default function Hero() {
                 }}
               >
                 {siteConfig.hero.ctaSecondaryText}
+              </Button>
+
+              <Button
+                component={Link}
+                href={siteConfig.nav.catalogoHref}
+                variant="contained"
+                size="large"
+                startIcon={<MenuBookIcon />}
+                sx={{
+                  background: 'rgba(255,255,255,0.15)',
+                  color: siteConfig.colors.textLight,
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  backdropFilter: 'blur(10px)',
+                  px: 4,
+                  '&:hover': {
+                    background: 'rgba(255,255,255,0.25)',
+                    transform: 'translateY(-2px)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                Ver Cardápio
               </Button>
             </Box>
           </Box>
