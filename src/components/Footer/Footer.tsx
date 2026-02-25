@@ -38,9 +38,23 @@ export default function Footer() {
             </Typography>
           </Box>
 
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            {siteConfig.footer.copyright}
-          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5 }}>
+            <Typography variant="body2" sx={{ textAlign: 'center' }}>
+              {siteConfig.footer.copyright}
+            </Typography>
+            <Link
+              href="/admin"
+              sx={{
+                color: 'rgba(255,255,255,0.3)',
+                textDecoration: 'none',
+                fontSize: '0.75rem',
+                '&:hover': { color: 'rgba(255,255,255,0.6)' },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              Área Administrativa
+            </Link>
+          </Box>
 
           <Box sx={{ display: 'flex', gap: 3 }}>
             {siteConfig.footer.links.map((link) => (
