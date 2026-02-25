@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Fab from '@mui/material/Fab'
 import Button from '@mui/material/Button'
+import ConfirmWhatsAppDialog from './ConfirmWhatsAppDialog'
 import Badge from '@mui/material/Badge'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import ItemCatalogo from './ItemCatalogo'
@@ -21,12 +22,16 @@ type PropsCatalogoPage = {
 
 export default function CatalogoPage({ itens }: PropsCatalogoPage) {
   const [carrinhoAberto, setCarrinhoAberto] = useState(false)
-  const { itens: itensCarrinho, adicionarAoCarrinho, removerDoCarrinho, alterarQuantidade, totalItens, totalPreco } = useCarrinho()
+  const { itens: itensCarrinho, adicionarAoCarrinho, removerDoCarrinho, alterarQuantidade, totalItens, totalPreco, limparCarrinho } = useCarrinho()
+
+  const [confirmAberto, setConfirmAberto] = useState(false)
+  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null)
 
   const finalizarPedido = () => {
     const mensagem = gerarMensagemPedido(itensCarrinho)
     const url = gerarUrlWhatsapp(siteConfig.company.whatsapp, mensagem)
-    window.open(url, '_blank')
+    setWhatsappUrl(url)
+    setConfirmAberto(true)
   }
 
   return (
@@ -149,6 +154,19 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
         onAlterarQuantidade={alterarQuantidade}
         onRemover={removerDoCarrinho}
         onFinalizar={finalizarPedido}
+      />
+
+      <ConfirmWhatsAppDialog
+        open={confirmAberto}
+        onClose={() => setConfirmAberto(false)}
+        onConfirm={() => {
+          if (whatsappUrl) {
+            limparCarrinho()
+            setCarrinhoAberto(false)
+            window.open(whatsappUrl, '_blank')
+          }
+          setConfirmAberto(false)
+        }}
       />
     </Box>
   )
