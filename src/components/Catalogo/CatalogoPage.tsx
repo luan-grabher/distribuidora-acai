@@ -50,6 +50,9 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
         <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.85)', fontWeight: 400 }}>
           Escolha os produtos para o seu pedido
         </Typography>
+        <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 1 }}>
+          {siteConfig.company.operatingHours}
+        </Typography>
       </Box>
 
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: { xs: 4, md: 6 } }}>
