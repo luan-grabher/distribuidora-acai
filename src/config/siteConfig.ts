@@ -127,13 +127,12 @@ export const siteConfig = {
     address: {
         overline: "Onde Estamos",
         title: "Nossa Localização",
-        street: "Rua Exemplo, 123",
-        neighborhood: "Bairro Centro",
+        street: "Av. Baltazar de Oliveira Garcia, 4987",
+        neighborhood: "Rubem Berta",
         city: "Porto Alegre",
         state: "RS",
-        cep: "90000-000",
-        googleMapsEmbedUrl:
-            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.8!2d-51.2177!3d-30.0346!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzA0LjYiUyA1McKwMTMnMDMuNyJX!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr",
+        cep: "91180-001",
+        googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d431.85781065266553!2d-51.096723275873835!3d-30.012104738999273!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1772025489334!5m2!1spt-BR!2sbr",
     },
     footer: {
         copyright: "© 2024 Miquinho Distribuidora. Todos os direitos reservados.",
