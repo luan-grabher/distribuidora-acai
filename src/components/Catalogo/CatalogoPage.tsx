@@ -89,43 +89,45 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
       </Box>
 
       <Box>
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            display: { xs: 'flex', md: 'none' },
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 2,
-            p: 2,
-            bgcolor: 'background.paper',
-            borderTop: '1px solid',
-            borderColor: 'divider',
-            boxShadow: '0 -6px 18px rgba(0,0,0,0.06)',
-            zIndex: (theme) => theme.zIndex.drawer - 1,
-          }}
-        >
-          <Box>
-            <Box sx={{ display: 'flex', gap: 1, alignItems: 'baseline' }}>
-              <Typography variant="subtitle1" fontWeight={700}>
-                {itensCarrinho.length} ite{itensCarrinho.length === 1 ? 'm' : 'ns'}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                R$ {totalPreco.toFixed(2).replace('.', ',')}
-              </Typography>
-            </Box>
-          </Box>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setCarrinhoAberto(true)}
-            sx={{ borderRadius: '50px', px: 3, py: 1.25, fontWeight: 700 }}
+        {itensCarrinho.length > 0 && (
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              display: { xs: 'flex', md: 'none' },
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 2,
+              p: 2,
+              bgcolor: 'background.paper',
+              borderTop: '1px solid',
+              borderColor: 'divider',
+              boxShadow: '0 -6px 18px rgba(0,0,0,0.06)',
+              zIndex: (theme) => theme.zIndex.drawer - 1,
+            }}
           >
-            Finalizar
-          </Button>
-        </Box>
+            <Box>
+              <Box sx={{ display: 'flex', gap: 1, alignItems: 'baseline' }}>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  {itensCarrinho.length} ite{itensCarrinho.length === 1 ? 'm' : 'ns'}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  R$ {totalPreco.toFixed(2).replace('.', ',')}
+                </Typography>
+              </Box>
+            </Box>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => setCarrinhoAberto(true)}
+              sx={{ borderRadius: '50px', px: 3, py: 1.25, fontWeight: 700 }}
+            >
+              Finalizar
+            </Button>
+          </Box>
+        )}
 
         <Fab
           color="primary"
