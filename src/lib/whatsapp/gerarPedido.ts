@@ -2,7 +2,7 @@ import type { ItemCarrinho } from '@/types/carrinho'
 
 export function gerarMensagemPedido(itens: ItemCarrinho[]): string {
   const linhasItens = itens
-    .map((item) => `• ${item.quantidade}x ${item.nome} — R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}`)
+    .map((item) => `• ${item.quantidade}x ${item.nome} (R$ ${item.preco.toFixed(2).replace('.', ',')}) — R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}`)
     .join('\n')
 
   const total = itens.reduce((soma, item) => soma + item.preco * item.quantidade, 0)
