@@ -29,11 +29,12 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default'}}>
       <Box
         sx={{
           background: 'linear-gradient(135deg, #4A0080 0%, #7B1FA2 100%)',
-          py: { xs: 8, md: 10 },
+          pt: { xs: 15, md: 20 },
+          pb: { xs: 8, md: 10 },
           px: 2,
           textAlign: 'center',
         }}
