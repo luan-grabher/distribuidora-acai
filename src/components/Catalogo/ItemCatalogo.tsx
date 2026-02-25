@@ -6,19 +6,22 @@ import CardMedia from '@mui/material/CardMedia'
 import CardActions from '@mui/material/CardActions'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import type { Item } from '@/types/item'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import RemoveIcon from '@mui/icons-material/Remove'
 
 type PropsItemCatalogo = {
   item: Item
   onAdicionar: (item: Item) => void
+  onDiminuir?: (item: Item) => void
   quantidade?: number
 }
 
-export default function ItemCatalogo({ item, onAdicionar, quantidade = 0 }: PropsItemCatalogo) {
+export default function ItemCatalogo({ item, onAdicionar, onDiminuir, quantidade = 0 }: PropsItemCatalogo) {
   const semEstoque = item.estoque <= 0
 
   return (
@@ -78,7 +81,13 @@ export default function ItemCatalogo({ item, onAdicionar, quantidade = 0 }: Prop
           </Typography>
           {quantidade > 0 && (
               <Typography variant="subtitle2" fontWeight={700} color="text.secondary" display={'flex'} alignItems="center" gap={0.5} lineHeight={1}>
-                <b>{quantidade}x</b> <ShoppingCartIcon fontSize="small" />
+                <b>{quantidade}x</b>
+                <ShoppingCartIcon fontSize="small" />
+                {onDiminuir && (
+                  <IconButton size="small" color="error" onClick={() => onDiminuir(item)} sx={{ ml: 0.5 }}>
+                    <RemoveIcon fontSize="small" />
+                  </IconButton>
+                )}
               </Typography>
           )}
         </Box>
