@@ -17,6 +17,7 @@ import Paper from '@mui/material/Paper'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import Typography from '@mui/material/Typography'
+import Avatar from '@mui/material/Avatar'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
@@ -101,11 +102,19 @@ export default function ListaItens() {
             {itens.map((item) => (
               <TableRow key={item.id} hover>
                 <TableCell>
-                  <Box>
-                    <Typography variant="body1" fontWeight={600}>{item.nome}</Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {item.descricao}
-                    </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Avatar
+                      src={item.imagem_url}
+                      alt={item.nome}
+                      sx={{ width: 48, height: 48 }}
+                      variant="rounded"
+                    />
+                    <Box>
+                      <Typography variant="body1" fontWeight={600}>{item.nome}</Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.descricao}
+                      </Typography>
+                    </Box>
                   </Box>
                 </TableCell>
                 <TableCell>
