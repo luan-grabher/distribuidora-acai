@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Fab from '@mui/material/Fab'
+import Button from '@mui/material/Button'
 import Badge from '@mui/material/Badge'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import ItemCatalogo from './ItemCatalogo'
@@ -29,7 +30,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default'}}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: { xs: 10, md: 0 } }}>
       <Box
         sx={{
           background: 'linear-gradient(135deg, #4A0080 0%, #7B1FA2 100%)',
@@ -82,22 +83,63 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
         </Grid>
       </Box>
 
-      <Fab
-        color="primary"
-        onClick={() => setCarrinhoAberto(true)}
-        sx={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          width: 64,
-          height: 64,
-          boxShadow: '0 8px 24px rgba(74,0,128,0.4)',
-        }}
-      >
-        <Badge badgeContent={totalItens} color="error" max={99}>
-          <ShoppingCartIcon />
-        </Badge>
-      </Fab>
+      <Box>
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            display: { xs: 'flex', md: 'none' },
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+            p: 2,
+            bgcolor: 'background.paper',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            boxShadow: '0 -6px 18px rgba(0,0,0,0.06)',
+            zIndex: (theme) => theme.zIndex.drawer - 1,
+          }}
+        >
+          <Box>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'baseline' }}>
+              <Typography variant="subtitle1" fontWeight={700}>
+                {itensCarrinho.length} ite{itensCarrinho.length === 1 ? 'm' : 'ns'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                R$ {totalPreco.toFixed(2).replace('.', ',')}
+              </Typography>
+            </Box>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setCarrinhoAberto(true)}
+            sx={{ borderRadius: '50px', px: 3, py: 1.25, fontWeight: 700 }}
+          >
+            Finalizar
+          </Button>
+        </Box>
+
+        <Fab
+          color="primary"
+          onClick={() => setCarrinhoAberto(true)}
+          sx={{
+            display: { xs: 'none', md: 'inline-flex' },
+            position: 'fixed',
+            bottom: 24,
+            right: 24,
+            width: 64,
+            height: 64,
+            boxShadow: '0 8px 24px rgba(74,0,128,0.4)',
+          }}
+        >
+          <Badge badgeContent={totalItens} color="error" max={99}>
+            <ShoppingCartIcon />
+          </Badge>
+        </Fab>
+      </Box>
 
       <CarrinhoDrawer
         aberto={carrinhoAberto}
