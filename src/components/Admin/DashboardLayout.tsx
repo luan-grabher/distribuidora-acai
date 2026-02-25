@@ -6,6 +6,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Image from 'next/image'
+import Link from 'next/link'
 import LogoutIcon from '@mui/icons-material/Logout'
 import { useLogin } from '@/hooks/useLogin'
 import { siteConfig } from '@/config/siteConfig'
@@ -25,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', cursor: 'pointer' }}>
             <Image
               src={siteConfig.logo.url}
               alt={siteConfig.logo.alt}
@@ -36,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Typography color="white" fontWeight={700}>
               Admin — {siteConfig.company.name}
             </Typography>
-          </Box>
+          </Link>
           <Button
             color="inherit"
             startIcon={<LogoutIcon />}
