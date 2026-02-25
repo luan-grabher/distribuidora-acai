@@ -6,7 +6,7 @@ export const siteConfig = {
     whatsapp: '+55 (51) 99766-8057',
     email: 'contato@miquinho.com.br',
     instagram: '@miquinhodistribuidora',
-    operatingHours: 'Seg - Sex: 08:00 - 18:00; Sáb: 08:00 - 12:00',
+    operatingHours: 'Seg - Sex: 08:00 - 18:00\nSáb: 08:00 - 12:00',
   },
   logo: {
     url: '/logo-com-espaço.png',

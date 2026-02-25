@@ -51,7 +51,12 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
           Escolha os produtos para o seu pedido
         </Typography>
         <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 1 }}>
-          {siteConfig.company.operatingHours}
+          {siteConfig.company.operatingHours.split('\n').map((line, index) => (
+            <span key={index}>
+              {line}
+              <br />
+            </span>
+          ))}
         </Typography>
       </Box>
 
