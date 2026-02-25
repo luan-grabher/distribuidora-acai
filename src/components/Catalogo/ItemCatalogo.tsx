@@ -10,13 +10,15 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import type { Item } from '@/types/item'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 
 type PropsItemCatalogo = {
   item: Item
   onAdicionar: (item: Item) => void
+  quantidade?: number
 }
 
-export default function ItemCatalogo({ item, onAdicionar }: PropsItemCatalogo) {
+export default function ItemCatalogo({ item, onAdicionar, quantidade = 0 }: PropsItemCatalogo) {
   const semEstoque = item.estoque <= 0
 
   return (
@@ -70,9 +72,16 @@ export default function ItemCatalogo({ item, onAdicionar }: PropsItemCatalogo) {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
           {item.descricao}
         </Typography>
-        <Typography variant="h5" fontWeight={800} color="primary">
-          R$ {item.preco.toFixed(2).replace('.', ',')}
-        </Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Typography variant="h5" fontWeight={800} color="primary">
+            R$ {item.preco.toFixed(2).replace('.', ',')}
+          </Typography>
+          {quantidade > 0 && (
+              <Typography variant="subtitle2" fontWeight={700} color="text.secondary" display={'flex'} alignItems="center" gap={0.5} lineHeight={1}>
+                <b>{quantidade}x</b> <ShoppingCartIcon fontSize="small" />
+              </Typography>
+          )}
+        </Box>
       </CardContent>
       <CardActions sx={{ p: 2, pt: 0 }}>
         <Button

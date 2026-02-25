@@ -71,7 +71,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
         <Grid container spacing={3}>
           {itens.map((item) => (
             <Grid key={item.id} size={{ xs: 12, sm: 6, md: 4 }}>
-              <ItemCatalogo item={item} onAdicionar={adicionarAoCarrinho} />
+              <ItemCatalogo item={item} onAdicionar={adicionarAoCarrinho} quantidade={itensCarrinho.find(i => i.id === item.id)?.quantidade ?? 0} />
             </Grid>
           ))}
         </Grid>
