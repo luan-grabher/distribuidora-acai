@@ -29,6 +29,7 @@ export const siteConfig = {
             { label: "Sobre", href: "#about" },
             { label: "Produtos", href: "#products" },
             { label: "Benefícios", href: "#benefits" },
+            { label: "Localização", href: "#address" },
             { label: "Contato", href: "#contact" },
         ],
         catalogoHref: "/catalogo",
@@ -122,6 +123,17 @@ export const siteConfig = {
         subtitle: "Entre em contato e descubra como a Miquinho Distribuidora pode transformar sua açaiteria",
         whatsappText: "Falar no WhatsApp",
         emailText: "Enviar E-mail",
+    },
+    address: {
+        overline: "Onde Estamos",
+        title: "Nossa Localização",
+        street: "Rua Exemplo, 123",
+        neighborhood: "Bairro Centro",
+        city: "Porto Alegre",
+        state: "RS",
+        cep: "90000-000",
+        googleMapsEmbedUrl:
+            "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.8!2d-51.2177!3d-30.0346!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzDCsDAyJzA0LjYiUyA1McKwMTMnMDMuNyJX!5e0!3m2!1spt-BR!2sbr!4v1700000000000!5m2!1spt-BR!2sbr",
     },
     footer: {
         copyright: "© 2024 Miquinho Distribuidora. Todos os direitos reservados.",
