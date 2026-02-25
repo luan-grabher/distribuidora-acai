@@ -35,6 +35,9 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
   const [dados, setDados] = useState<NovoItem>(valoresIniciais)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  const [previewSrc, setPreviewSrc] = useState<string | null>(null)
+  const [previewCarregando, setPreviewCarregando] = useState(false)
+  const [previewErro, setPreviewErro] = useState(false)
 
   useEffect(() => {
     setDados(itemEdicao ? {
@@ -46,7 +49,42 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
       ativo: itemEdicao.ativo,
     } : valoresIniciais)
     setErro(null)
+    // inicializa preview quando abrir edição
+    if (itemEdicao && itemEdicao.imagem_url) {
+      carregarPreview(itemEdicao.imagem_url)
+    } else {
+      setPreviewSrc(null)
+      setPreviewErro(false)
+    }
   }, [itemEdicao, aberto])
+
+  // atualiza preview quando o campo de url muda
+  useEffect(() => {
+    if (!dados.imagem_url) {
+      setPreviewSrc(null)
+      setPreviewErro(false)
+      return
+    }
+    carregarPreview(dados.imagem_url)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dados.imagem_url])
+
+  const carregarPreview = (url: string) => {
+    setPreviewCarregando(true)
+    setPreviewErro(false)
+    const img = new Image()
+    img.onload = () => {
+      setPreviewSrc(url)
+      setPreviewCarregando(false)
+      setPreviewErro(false)
+    }
+    img.onerror = () => {
+      setPreviewSrc(null)
+      setPreviewCarregando(false)
+      setPreviewErro(true)
+    }
+    img.src = url
+  }
 
   const handleChange = (campo: keyof NovoItem, valor: string | number | boolean) => {
     setDados((anterior) => ({ ...anterior, [campo]: valor }))
@@ -103,6 +141,25 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 onChange={(e) => handleChange('imagem_url', e.target.value)}
                 placeholder="https://exemplo.com/imagem.jpg"
               />
+            </Grid>
+            <Grid size={12}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Box sx={{ width: 120, height: 120, bgcolor: 'background.default', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
+                  {previewCarregando ? (
+                    <CircularProgress size={24} />
+                  ) : previewSrc ? (
+                    <Box component="img" src={previewSrc} alt="Preview" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : previewErro ? (
+                    <Box sx={{ px: 1, textAlign: 'center', color: 'text.secondary' }}>Preview indisponível</Box>
+                  ) : (
+                    <Box sx={{ px: 1, textAlign: 'center', color: 'text.secondary' }}>Sem imagem</Box>
+                  )}
+                </Box>
+                <Box>
+                  <Box component="span" sx={{ display: 'block', fontWeight: 600 }}>Preview da Imagem</Box>
+                  <Box sx={{ color: 'text.secondary', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dados.imagem_url || 'Cole uma URL ou abra a edição'}</Box>
+                </Box>
+              </Box>
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
