@@ -35,7 +35,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', pb: { xs: 10, md: 0 } }}>
+    <Box sx={{ minHeight: '90vh', bgcolor: 'background.default', pb: { xs: 0, md: 0 } }}>
       <Box
         sx={{
           background: 'linear-gradient(135deg, #4A0080 0%, #7B1FA2 100%)',

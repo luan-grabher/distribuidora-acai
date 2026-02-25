@@ -4,6 +4,7 @@ import CatalogoPage from '@/components/Catalogo/CatalogoPage'
 import { listarItens } from '@/lib/itens/listarItens'
 import type { Metadata } from 'next'
 import { siteConfig } from '@/config/siteConfig'
+import { Box } from '@mui/material'
 
 export const metadata: Metadata = {
   title: `Catálogo | ${siteConfig.company.name}`,
@@ -20,6 +21,14 @@ export default async function PaginaCatalogo() {
         <CatalogoPage itens={itens} />
       </main>
       <Footer />
+      <Box
+        id={"espaco-para-exibir-footer-em-cima-do-carrinho-no-mobile"}
+        sx={{
+          height: '80px',
+          display: { xs: 'block', md: 'none' },
+        }}
+      >        
+      </Box>
     </>
   )
 }
