@@ -1,11 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
 import Fab from '@mui/material/Fab'
 import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
 import ConfirmWhatsAppDialog from './ConfirmWhatsAppDialog'
 import Badge from '@mui/material/Badge'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
@@ -26,6 +29,15 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
 
   const [confirmAberto, setConfirmAberto] = useState(false)
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null)
+  const [textoPesquisa, setTextoPesquisa] = useState('')
+
+  const itensFiltrados = useMemo(() => {
+    const termoBusca = textoPesquisa.toLowerCase().trim()
+    if (!termoBusca) return itens
+    return itens.filter((item) =>
+      item.nome.toLowerCase().includes(termoBusca) || item.descricao.toLowerCase().includes(termoBusca)
+    )
+  }, [itens, textoPesquisa])
 
   const finalizarPedido = () => {
     const mensagem = gerarMensagemPedido(itensCarrinho)
@@ -67,6 +79,22 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
       </Box>
 
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: { xs: 4, md: 6 } }}>
+        <TextField
+          fullWidth
+          placeholder="Pesquisar produtos..."
+          value={textoPesquisa}
+          onChange={(e) => setTextoPesquisa(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ mb: 4, maxWidth: 480 }}
+        />
         {itens.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary">
@@ -74,8 +102,15 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
             </Typography>
           </Box>
         )}
+        {itens.length > 0 && itensFiltrados.length === 0 && (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary">
+              Nenhum produto encontrado para &quot;{textoPesquisa}&quot;.
+            </Typography>
+          </Box>
+        )}
         <Grid container spacing={3}>
-          {itens.map((item) => (
+          {itensFiltrados.map((item) => (
             <Grid key={item.id} size={{ xs: 12, sm: 6, md: 4 }}>
               <ItemCatalogo
                 item={item}
