@@ -76,37 +76,25 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
             </span>
           ))}
         </Typography>
-        <Box sx={{ mt: 4, maxWidth: 480, mx: 'auto' }}>
-          <TextField
-            fullWidth
-            placeholder="Pesquisar produtos..."
-            value={textoPesquisa}
-            onChange={(e) => setTextoPesquisa(e.target.value)}
-            slotProps={{
-              input: {
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon sx={{ color: 'rgba(255,255,255,0.7)' }} />
-                  </InputAdornment>
-                ),
-              },
-            }}
-            sx={{
-              '& .MuiOutlinedInput-root': {
-                bgcolor: 'rgba(255,255,255,0.15)',
-                borderRadius: '50px',
-                color: 'white',
-                '& fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-                '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.6)' },
-                '&.Mui-focused fieldset': { borderColor: 'white' },
-              },
-              '& input::placeholder': { color: 'rgba(255,255,255,0.6)', opacity: 1 },
-            }}
-          />
-        </Box>
       </Box>
 
       <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: { xs: 4, md: 6 } }}>
+        <TextField
+          fullWidth
+          placeholder="Pesquisar produtos..."
+          value={textoPesquisa}
+          onChange={(e) => setTextoPesquisa(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ mb: 4, maxWidth: 480 }}
+        />
         {itens.length === 0 && (
           <Box sx={{ textAlign: 'center', py: 8 }}>
             <Typography variant="h6" color="text.secondary">
