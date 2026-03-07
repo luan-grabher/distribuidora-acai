@@ -6,6 +6,8 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/config/siteConfig";
 import { Box } from "@mui/material";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: `Catálogo | ${siteConfig.company.name}`,
     description: "Faça seu pedido diretamente pelo WhatsApp",

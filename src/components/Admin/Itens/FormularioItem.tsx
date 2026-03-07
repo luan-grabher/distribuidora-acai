@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -13,6 +13,8 @@ import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
+import Typography from '@mui/material/Typography'
+import UploadFileIcon from '@mui/icons-material/UploadFile'
 import type { Item, NovoItem, EdicaoItem } from '@/types/item'
 
 type PropsFormularioItem = {
@@ -38,6 +40,8 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const [previewCarregando, setPreviewCarregando] = useState(false)
   const [previewErro, setPreviewErro] = useState(false)
+  const inputArquivoRef = useRef<HTMLInputElement>(null)
+  const imagemCarregadaDoArquivoLocal = dados.imagem_url.startsWith('data:')
 
   useEffect(() => {
     setDados(itemEdicao ? {
@@ -49,27 +53,30 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
       ativo: itemEdicao.ativo,
     } : valoresIniciais)
     setErro(null)
-    // inicializa preview quando abrir edição
     if (itemEdicao && itemEdicao.imagem_url) {
-      carregarPreview(itemEdicao.imagem_url)
+      carregarPreviewDeUrl(itemEdicao.imagem_url)
     } else {
       setPreviewSrc(null)
       setPreviewErro(false)
     }
   }, [itemEdicao, aberto])
 
-  // atualiza preview quando o campo de url muda
   useEffect(() => {
     if (!dados.imagem_url) {
       setPreviewSrc(null)
       setPreviewErro(false)
       return
     }
-    carregarPreview(dados.imagem_url)
+    if (imagemCarregadaDoArquivoLocal) {
+      setPreviewSrc(dados.imagem_url)
+      setPreviewErro(false)
+      return
+    }
+    carregarPreviewDeUrl(dados.imagem_url)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dados.imagem_url])
 
-  const carregarPreview = (url: string) => {
+  const carregarPreviewDeUrl = (url: string) => {
     setPreviewCarregando(true)
     setPreviewErro(false)
     const img = new Image()
@@ -84,6 +91,20 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
       setPreviewErro(true)
     }
     img.src = url
+  }
+
+  const handleArquivoSelecionado = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const arquivo = e.target.files?.[0]
+    if (!arquivo) return
+    const leitor = new FileReader()
+    leitor.onload = (evento) => {
+      const base64 = evento.target?.result as string
+      handleChange('imagem_url', base64)
+    }
+    leitor.onerror = () => {
+      setPreviewErro(true)
+    }
+    leitor.readAsDataURL(arquivo)
   }
 
   const handleChange = (campo: keyof NovoItem, valor: string | number | boolean) => {
@@ -137,10 +158,30 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
               <TextField
                 fullWidth
                 label="URL da Imagem"
-                value={dados.imagem_url}
+                value={imagemCarregadaDoArquivoLocal ? '' : dados.imagem_url}
                 onChange={(e) => handleChange('imagem_url', e.target.value)}
                 placeholder="https://exemplo.com/imagem.jpg"
+                disabled={imagemCarregadaDoArquivoLocal}
+                helperText={imagemCarregadaDoArquivoLocal ? 'Imagem carregada do arquivo local' : ''}
               />
+            </Grid>
+            <Grid size={12}>
+              <input
+                ref={inputArquivoRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleArquivoSelecionado}
+              />
+              <Button
+                variant="outlined"
+                startIcon={<UploadFileIcon />}
+                onClick={() => inputArquivoRef.current?.click()}
+                fullWidth
+                sx={{ borderRadius: '8px', py: 1.5 }}
+              >
+                Carregar imagem do computador
+              </Button>
             </Grid>
             <Grid size={12}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -156,8 +197,19 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                   )}
                 </Box>
                 <Box>
-                  <Box component="span" sx={{ display: 'block', fontWeight: 600 }}>Preview da Imagem</Box>
-                  <Box sx={{ color: 'text.secondary', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{dados.imagem_url || 'Cole uma URL ou abra a edição'}</Box>
+                  <Typography component="span" sx={{ display: 'block', fontWeight: 600 }}>Preview da Imagem</Typography>
+                  {imagemCarregadaDoArquivoLocal ? (
+                    <Box>
+                      <Typography variant="body2" color="success.main">Imagem carregada do arquivo</Typography>
+                      <Button size="small" color="error" onClick={() => handleChange('imagem_url', '')} sx={{ mt: 0.5, px: 0 }}>
+                        Remover imagem
+                      </Button>
+                    </Box>
+                  ) : (
+                    <Typography sx={{ color: 'text.secondary', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {dados.imagem_url || 'Cole uma URL ou carregue uma imagem'}
+                    </Typography>
+                  )}
                 </Box>
               </Box>
             </Grid>
