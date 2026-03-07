@@ -18,6 +18,7 @@ import { useCarrinho } from '@/hooks/useCarrinho'
 import { gerarMensagemPedido, gerarUrlWhatsapp } from '@/lib/whatsapp/gerarPedido'
 import { siteConfig } from '@/config/siteConfig'
 import type { Item } from '@/types/item'
+import type { NovoPedido } from '@/types/pedido'
 
 type PropsCatalogoPage = {
   itens: Item[]
@@ -44,6 +45,35 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
     const url = gerarUrlWhatsapp(siteConfig.company.whatsapp, mensagem)
     setWhatsappUrl(url)
     setConfirmAberto(true)
+  }
+
+  const salvarPedidoEAbrirWhatsapp = async () => {
+    if (!whatsappUrl) return
+
+    const novoPedido: NovoPedido = {
+      itens: itensCarrinho.map((item) => ({
+        id: item.id,
+        nome: item.nome,
+        preco: item.preco,
+        quantidade: item.quantidade,
+        subtotal: item.preco * item.quantidade,
+      })),
+      total: totalPreco,
+    }
+
+    try {
+      await fetch('/api/pedidos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(novoPedido),
+      })
+    } catch {
+    }
+
+    limparCarrinho()
+    setCarrinhoAberto(false)
+    window.open(whatsappUrl, '_blank')
+    setConfirmAberto(false)
   }
 
   return (
@@ -196,14 +226,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
       <ConfirmWhatsAppDialog
         open={confirmAberto}
         onClose={() => setConfirmAberto(false)}
-        onConfirm={() => {
-          if (whatsappUrl) {
-            limparCarrinho()
-            setCarrinhoAberto(false)
-            window.open(whatsappUrl, '_blank')
-          }
-          setConfirmAberto(false)
-        }}
+        onConfirm={salvarPedidoEAbrirWhatsapp}
       />
     </Box>
   )
