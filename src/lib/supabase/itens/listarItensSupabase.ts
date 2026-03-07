@@ -6,7 +6,7 @@ export async function listarItensSupabase(): Promise<Item[]> {
     .from('itens_catalogo')
     .select('*')
     .eq('ativo', true)
-    .order('criado_em', { ascending: false })
+    .order('nome', { ascending: true })
 
   if (error) throw new Error(error.message)
   return data as Item[]
@@ -16,7 +16,7 @@ export async function listarTodosItensSupabase(): Promise<Item[]> {
   const { data, error } = await clienteSupabaseAdmin
     .from('itens_catalogo')
     .select('*')
-    .order('criado_em', { ascending: false })
+    .order('nome', { ascending: true })
 
   if (error) throw new Error(error.message)
   return data as Item[]

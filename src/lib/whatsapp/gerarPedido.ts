@@ -4,7 +4,7 @@ function escapeWhatsAppMarkdown(text: string): string {
   return text.replace(/\\/g, '\\\\').replace(/([*_~`])/g, '\\$1')
 }
 
-export function gerarMensagemPedido(itens: ItemCarrinho[]): string {
+export function gerarMensagemPedido(itens: ItemCarrinho[], nomeCliente: string): string {
   const linhasItens = itens
     .map((item) => {
       const nome = escapeWhatsAppMarkdown(item.nome)
@@ -17,7 +17,7 @@ export function gerarMensagemPedido(itens: ItemCarrinho[]): string {
   const total = itens.reduce((soma, item) => soma + item.preco * item.quantidade, 0)
   const totalFormatado = total.toFixed(2).replace('.', ',')
 
-  return `Olá! Gostaria de fazer um pedido:\n\n${linhasItens}\n\n*Total: R$ ${totalFormatado}*\n\nPor favor, confirme a disponibilidade e o prazo de entrega.`
+  return `Olá! Sou *${escapeWhatsAppMarkdown(nomeCliente)}* e gostaria de fazer um pedido:\n\n${linhasItens}\n\n*Total: R$ ${totalFormatado}*\n\nPor favor, confirme a disponibilidade e o prazo de entrega.`
 }
 
 export function gerarUrlWhatsapp(numeroCelular: string, mensagem: string): string {

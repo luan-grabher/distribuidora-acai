@@ -28,6 +28,8 @@ export type Pedido = {
   itens: ItemPedido[]
   total: number
   status: StatusPedido
+  nome_cliente: string
+  telefone_cliente: string
   criado_em: string
 }
 
