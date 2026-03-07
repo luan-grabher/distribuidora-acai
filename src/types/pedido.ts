@@ -33,8 +33,10 @@ export type Pedido = {
   criado_em: string
 }
 
-export type NovoPedido = Omit<Pedido, 'id' | 'criado_em' | 'status'>
+export type NovoPedido = Omit<Pedido, 'id' | 'status' | 'criado_em'> & { criado_em?: string }
 
 export type EdicaoPedido = {
-  status: StatusPedido
+  status?: StatusPedido
+  itens?: ItemPedido[]
+  total?: number
 }

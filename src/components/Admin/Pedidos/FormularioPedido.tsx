@@ -36,10 +36,18 @@ type PropsFormularioPedido = {
 
 const dadosClienteIniciais = { nome_cliente: '', telefone_cliente: '' }
 
+const obterDataAtualParaCampoDatetime = () => {
+  const agora = new Date()
+  agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset())
+  return agora.toISOString().slice(0, 16)
+}
+
 export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFormularioPedido) {
   const [dadosCliente, setDadosCliente] = useState(dadosClienteIniciais)
+  const [dataPedido, setDataPedido] = useState(obterDataAtualParaCampoDatetime)
   const [itensCatalogo, setItensCatalogo] = useState<Item[]>([])
   const [itemSelecionadoId, setItemSelecionadoId] = useState('')
+  const [precoItemSelecionado, setPrecoItemSelecionado] = useState<number | ''>('')
   const [quantidadeItemSelecionado, setQuantidadeItemSelecionado] = useState(1)
   const [itensDoPedido, setItensDoPedido] = useState<ItemPedido[]>([])
   const [salvando, setSalvando] = useState(false)
@@ -63,8 +71,10 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
   useEffect(() => {
     if (aberto) {
       setDadosCliente(dadosClienteIniciais)
+      setDataPedido(obterDataAtualParaCampoDatetime())
       setItensDoPedido([])
       setItemSelecionadoId('')
+      setPrecoItemSelecionado('')
       setQuantidadeItemSelecionado(1)
       setErro(null)
       buscarItensCatalogo()
@@ -77,25 +87,30 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
     const itemCatalogo = itensCatalogo.find(i => i.id === itemSelecionadoId)
     if (!itemCatalogo) return
 
+    const precoFinal = typeof precoItemSelecionado === 'number' && precoItemSelecionado > 0
+      ? precoItemSelecionado
+      : itemCatalogo.preco
+
     const indiceExistente = itensDoPedido.findIndex(i => i.id === itemSelecionadoId)
     if (indiceExistente >= 0) {
       setItensDoPedido(anterior => anterior.map((item, index) => {
         if (index !== indiceExistente) return item
         const novaQuantidade = item.quantidade + quantidadeItemSelecionado
-        return { ...item, quantidade: novaQuantidade, subtotal: itemCatalogo.preco * novaQuantidade }
+        return { ...item, quantidade: novaQuantidade, subtotal: precoFinal * novaQuantidade }
       }))
     } else {
       const novoItem: ItemPedido = {
         id: itemCatalogo.id,
         nome: itemCatalogo.nome,
-        preco: itemCatalogo.preco,
+        preco: precoFinal,
         quantidade: quantidadeItemSelecionado,
-        subtotal: itemCatalogo.preco * quantidadeItemSelecionado,
+        subtotal: precoFinal * quantidadeItemSelecionado,
       }
       setItensDoPedido(anterior => [...anterior, novoItem])
     }
 
     setItemSelecionadoId('')
+    setPrecoItemSelecionado('')
     setQuantidadeItemSelecionado(1)
   }
 
@@ -112,7 +127,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
     setSalvando(true)
     setErro(null)
     try {
-      await onSalvar({ ...dadosCliente, itens: itensDoPedido, total: totalDoPedido })
+      await onSalvar({ ...dadosCliente, itens: itensDoPedido, total: totalDoPedido, criado_em: new Date(dataPedido).toISOString() })
       onFechar()
     } catch {
       setErro('Erro ao criar pedido. Tente novamente.')
@@ -151,6 +166,17 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 required
               />
             </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Data do Pedido"
+                type="datetime-local"
+                value={dataPedido}
+                onChange={(e) => setDataPedido(e.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+                required
+              />
+            </Grid>
 
             <Grid size={12}>
               <Divider sx={{ my: 1 }} />
@@ -167,13 +193,18 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
               </Grid>
             ) : (
               <>
-                <Grid size={{ xs: 12, sm: 6 }}>
+                <Grid size={{ xs: 12, sm: 5 }}>
                   <FormControl fullWidth>
                     <InputLabel>Produto</InputLabel>
                     <Select
                       value={itemSelecionadoId}
                       label="Produto"
-                      onChange={(e) => setItemSelecionadoId(e.target.value)}
+                      onChange={(e) => {
+                        const id = e.target.value
+                        setItemSelecionadoId(id)
+                        const itemCatalogo = itensCatalogo.find(i => i.id === id)
+                        setPrecoItemSelecionado(itemCatalogo ? itemCatalogo.preco : '')
+                      }}
                     >
                       {itensCatalogo.map(item => (
                         <MenuItem key={item.id} value={item.id}>
@@ -186,6 +217,17 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 <Grid size={{ xs: 12, sm: 3 }}>
                   <TextField
                     fullWidth
+                    label="Preço Unit. (R$)"
+                    type="number"
+                    inputProps={{ min: 0, step: '0.01' }}
+                    value={precoItemSelecionado}
+                    onChange={(e) => setPrecoItemSelecionado(parseFloat(e.target.value) || '')}
+                    disabled={!itemSelecionadoId}
+                  />
+                </Grid>
+                <Grid size={{ xs: 12, sm: 2 }}>
+                  <TextField
+                    fullWidth
                     label="Quantidade"
                     type="number"
                     inputProps={{ min: 1 }}
@@ -193,7 +235,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                     onChange={(e) => setQuantidadeItemSelecionado(parseInt(e.target.value) || 1)}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 3 }}>
+                <Grid size={{ xs: 12, sm: 2 }}>
                   <Button
                     fullWidth
                     variant="outlined"
