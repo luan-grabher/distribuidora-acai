@@ -18,11 +18,14 @@ import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
+import Button from '@mui/material/Button'
+import AddIcon from '@mui/icons-material/Add'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { usePedidosAdmin } from '@/hooks/usePedidosAdmin'
-import type { Pedido, StatusPedido } from '@/types/pedido'
+import type { Pedido, StatusPedido, NovoPedido } from '@/types/pedido'
 import { todosStatusPedido } from '@/types/pedido'
+import FormularioPedido from './FormularioPedido'
 
 const coresPorStatus: Record<StatusPedido, 'warning' | 'info' | 'primary' | 'secondary' | 'success' | 'error'> = {
   'aguardando confirmação': 'warning',
@@ -143,10 +146,15 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
 }
 
 export default function ListaPedidos() {
-  const { pedidos, carregando, erro, atualizarPedido } = usePedidosAdmin()
+  const { pedidos, carregando, erro, criarPedido, atualizarPedido } = usePedidosAdmin()
+  const [formularioAberto, setFormularioAberto] = useState(false)
 
   const handleAtualizarStatus = async (id: string, status: StatusPedido) => {
     await atualizarPedido(id, { status })
+  }
+
+  const handleCriarPedido = async (dados: NovoPedido) => {
+    await criarPedido(dados)
   }
 
   if (carregando) {
@@ -163,6 +171,14 @@ export default function ListaPedidos() {
         <Typography variant="h5" fontWeight={700}>
           Pedidos
         </Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setFormularioAberto(true)}
+          sx={{ borderRadius: '50px' }}
+        >
+          Novo Pedido
+        </Button>
       </Box>
 
       {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
@@ -197,6 +213,12 @@ export default function ListaPedidos() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <FormularioPedido
+        aberto={formularioAberto}
+        onFechar={() => setFormularioAberto(false)}
+        onSalvar={handleCriarPedido}
+      />
     </Box>
   )
 }
