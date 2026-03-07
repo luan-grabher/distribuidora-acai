@@ -1,12 +1,17 @@
 export const siteConfig = {
+    url: "https://miquinho-distribuidora.vercel.app",
     company: {
         name: "Miquinho Distribuidora",
         tagline: "Do Coração da Amazônia Para Sua Açaiteria",
-        description: "Produzimos nosso próprio açaí com qualidade e tradição, entregando frescor e sabor incomparável para sua açaiteria.",
+        description: "Distribuidora de açaí direto do produtor para açaiterias em Porto Alegre. Açaí cremoso premium, embalagens descartáveis e entrega garantida em 24h.",
+        shortDescription: "Açaí direto do produtor para sua açaiteria. Qualidade premium, preços competitivos e entrega em 24h em Porto Alegre.",
         whatsapp: "+55 (51) 98541-2665",
+        whatsappE164: "+55-51-98541-2665",
         email: "contato@miquinho.com.br",
         instagram: "@miquinhodistribuidora",
+        instagramUrl: "https://www.instagram.com/miquinhodistribuidora",
         operatingHours: "Seg - Sex: 08:00 - 18:00\nSáb: 08:00 - 12:00",
+        keywords: ["distribuidora de açaí", "açaí porto alegre", "açaí para açaiteria", "açaí atacado", "fornecedor açaí RS"],
     },
     logo: {
         url: "/logo-com-espaço.png",
@@ -132,6 +137,8 @@ export const siteConfig = {
         city: "Porto Alegre",
         state: "RS",
         cep: "91180-001",
+        geoLatitude: -30.0121,
+        geoLongitude: -51.0967,
         googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d431.85781065266553!2d-51.096723275873835!3d-30.012104738999273!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1772025489334!5m2!1spt-BR!2sbr",
     },
     footer: {
