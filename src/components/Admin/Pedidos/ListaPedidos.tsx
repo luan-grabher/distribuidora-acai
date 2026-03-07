@@ -19,11 +19,15 @@ import FormControl from '@mui/material/FormControl'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
+import TextField from '@mui/material/TextField'
 import AddIcon from '@mui/icons-material/Add'
+import EditIcon from '@mui/icons-material/Edit'
+import SaveIcon from '@mui/icons-material/Save'
+import CloseIcon from '@mui/icons-material/Close'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { usePedidosAdmin } from '@/hooks/usePedidosAdmin'
-import type { Pedido, StatusPedido, NovoPedido } from '@/types/pedido'
+import type { Pedido, StatusPedido, NovoPedido, ItemPedido } from '@/types/pedido'
 import { todosStatusPedido } from '@/types/pedido'
 import FormularioPedido from './FormularioPedido'
 
@@ -36,9 +40,17 @@ const coresPorStatus: Record<StatusPedido, 'warning' | 'info' | 'primary' | 'sec
   'cancelado': 'error',
 }
 
-function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtualizarStatus: (id: string, status: StatusPedido) => Promise<void> }) {
+type PropsLinhaExpandivel = {
+  pedido: Pedido
+  onAtualizarStatus: (id: string, status: StatusPedido) => Promise<void>
+  onAtualizarItens: (id: string, itens: ItemPedido[], total: number) => Promise<void>
+}
+
+function LinhaExpandivel({ pedido, onAtualizarStatus, onAtualizarItens }: PropsLinhaExpandivel) {
   const [expandido, setExpandido] = useState(false)
   const [atualizando, setAtualizando] = useState(false)
+  const [editandoPrecos, setEditandoPrecos] = useState(false)
+  const [itensPedidoEditaveis, setItensPedidoEditaveis] = useState<ItemPedido[]>(pedido.itens)
 
   const handleStatus = async (novoStatus: StatusPedido) => {
     setAtualizando(true)
@@ -48,6 +60,39 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
       setAtualizando(false)
     }
   }
+
+  const iniciarEdicaoPrecos = () => {
+    setItensPedidoEditaveis(pedido.itens)
+    setEditandoPrecos(true)
+  }
+
+  const cancelarEdicaoPrecos = () => {
+    setItensPedidoEditaveis(pedido.itens)
+    setEditandoPrecos(false)
+  }
+
+  const alterarPrecoItem = (index: number, novoPreco: number) => {
+    setItensPedidoEditaveis(prev => prev.map((item, i) => {
+      if (i !== index) return item
+      return { ...item, preco: novoPreco, subtotal: novoPreco * item.quantidade }
+    }))
+  }
+
+  const salvarEdicaoPrecos = async () => {
+    const algumPrecoInvalido = itensPedidoEditaveis.some(item => item.preco <= 0)
+    if (algumPrecoInvalido) return
+    const novoTotal = itensPedidoEditaveis.reduce((soma, item) => soma + item.subtotal, 0)
+    setAtualizando(true)
+    try {
+      await onAtualizarItens(pedido.id, itensPedidoEditaveis, novoTotal)
+      setEditandoPrecos(false)
+    } finally {
+      setAtualizando(false)
+    }
+  }
+
+  const totalEditavel = itensPedidoEditaveis.reduce((soma, item) => soma + item.subtotal, 0)
+  const algumPrecoInvalido = itensPedidoEditaveis.some(item => item.preco <= 0)
 
   const dataFormatada = new Date(pedido.criado_em).toLocaleString('pt-BR', {
     day: '2-digit',
@@ -108,9 +153,41 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
         <TableCell colSpan={6} sx={{ py: 0 }}>
           <Collapse in={expandido} timeout="auto" unmountOnExit>
             <Box sx={{ py: 2, px: 3 }}>
-              <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>
-                Itens do Pedido
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                <Typography variant="subtitle2" fontWeight={700}>
+                  Itens do Pedido
+                </Typography>
+                {!editandoPrecos ? (
+                  <Button
+                    size="small"
+                    startIcon={<EditIcon />}
+                    onClick={iniciarEdicaoPrecos}
+                    disabled={atualizando}
+                  >
+                    Editar preços
+                  </Button>
+                ) : (
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button
+                      size="small"
+                      variant="contained"
+                      startIcon={atualizando ? <CircularProgress size={14} color="inherit" /> : <SaveIcon />}
+                      onClick={salvarEdicaoPrecos}
+                      disabled={atualizando || algumPrecoInvalido}
+                    >
+                      Salvar
+                    </Button>
+                    <Button
+                      size="small"
+                      startIcon={<CloseIcon />}
+                      onClick={cancelarEdicaoPrecos}
+                      disabled={atualizando}
+                    >
+                      Cancelar
+                    </Button>
+                  </Box>
+                )}
+              </Box>
               <Table size="small">
                 <TableHead>
                   <TableRow>
@@ -121,10 +198,24 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {pedido.itens.map((item, index) => (
+                  {(editandoPrecos ? itensPedidoEditaveis : pedido.itens).map((item, index) => (
                     <TableRow key={index}>
                       <TableCell>{item.nome}</TableCell>
-                      <TableCell align="right">R$ {item.preco.toFixed(2).replace('.', ',')}</TableCell>
+                      <TableCell align="right">
+                        {editandoPrecos ? (
+                          <TextField
+                            size="small"
+                            type="number"
+                            value={item.preco}
+                            inputProps={{ min: 0.01, step: '0.01' }}
+                            sx={{ width: '110px', '& input': { textAlign: 'right' } }}
+                            onChange={(e) => alterarPrecoItem(index, parseFloat(e.target.value) || 0)}
+                            error={item.preco <= 0}
+                          />
+                        ) : (
+                          `R$ ${item.preco.toFixed(2).replace('.', ',')}`
+                        )}
+                      </TableCell>
                       <TableCell align="right">{item.quantidade}</TableCell>
                       <TableCell align="right">R$ {item.subtotal.toFixed(2).replace('.', ',')}</TableCell>
                     </TableRow>
@@ -132,7 +223,7 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
                   <TableRow>
                     <TableCell colSpan={3} align="right" sx={{ fontWeight: 700 }}>Total</TableCell>
                     <TableCell align="right" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                      R$ {pedido.total.toFixed(2).replace('.', ',')}
+                      R$ {(editandoPrecos ? totalEditavel : pedido.total).toFixed(2).replace('.', ',')}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -151,6 +242,10 @@ export default function ListaPedidos() {
 
   const handleAtualizarStatus = async (id: string, status: StatusPedido) => {
     await atualizarPedido(id, { status })
+  }
+
+  const handleAtualizarItens = async (id: string, itens: ItemPedido[], total: number) => {
+    await atualizarPedido(id, { itens, total })
   }
 
   const handleCriarPedido = async (dados: NovoPedido) => {
@@ -201,6 +296,7 @@ export default function ListaPedidos() {
                 key={pedido.id}
                 pedido={pedido}
                 onAtualizarStatus={handleAtualizarStatus}
+                onAtualizarItens={handleAtualizarItens}
               />
             ))}
             {pedidos.length === 0 && (
@@ -222,3 +318,4 @@ export default function ListaPedidos() {
     </Box>
   )
 }
+
