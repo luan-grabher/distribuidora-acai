@@ -29,7 +29,6 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
   const { itens: itensCarrinho, adicionarAoCarrinho, removerDoCarrinho, alterarQuantidade, totalItens, totalPreco, limparCarrinho } = useCarrinho()
 
   const [confirmAberto, setConfirmAberto] = useState(false)
-  const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null)
   const [textoPesquisa, setTextoPesquisa] = useState('')
 
   const itensFiltrados = useMemo(() => {
@@ -41,14 +40,12 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
   }, [itens, textoPesquisa])
 
   const finalizarPedido = () => {
-    const mensagem = gerarMensagemPedido(itensCarrinho)
-    const url = gerarUrlWhatsapp(siteConfig.company.whatsapp, mensagem)
-    setWhatsappUrl(url)
     setConfirmAberto(true)
   }
 
-  const salvarPedidoEAbrirWhatsapp = async () => {
-    if (!whatsappUrl) return
+  const salvarPedidoEAbrirWhatsapp = async (dadosCliente: { nome: string; telefone: string }) => {
+    const mensagem = gerarMensagemPedido(itensCarrinho, dadosCliente.nome)
+    const url = gerarUrlWhatsapp(siteConfig.company.whatsapp, mensagem)
 
     const novoPedido: NovoPedido = {
       itens: itensCarrinho.map((item) => ({
@@ -59,6 +56,8 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
         subtotal: item.preco * item.quantidade,
       })),
       total: totalPreco,
+      nome_cliente: dadosCliente.nome,
+      telefone_cliente: dadosCliente.telefone,
     }
 
     try {
@@ -72,7 +71,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
 
     limparCarrinho()
     setCarrinhoAberto(false)
-    window.open(whatsappUrl, '_blank')
+    window.open(url, '_blank')
     setConfirmAberto(false)
   }
 

@@ -69,6 +69,10 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
         </TableCell>
         <TableCell>{dataFormatada}</TableCell>
         <TableCell>
+          <Typography variant="body2" fontWeight={600}>{pedido.nome_cliente}</Typography>
+          <Typography variant="caption" color="text.secondary">{pedido.telefone_cliente}</Typography>
+        </TableCell>
+        <TableCell>
           <Typography fontWeight={600} color="primary">
             R$ {pedido.total.toFixed(2).replace('.', ',')}
           </Typography>
@@ -98,7 +102,7 @@ function LinhaExpandivel({ pedido, onAtualizarStatus }: { pedido: Pedido; onAtua
         </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell colSpan={5} sx={{ py: 0 }}>
+        <TableCell colSpan={6} sx={{ py: 0 }}>
           <Collapse in={expandido} timeout="auto" unmountOnExit>
             <Box sx={{ py: 2, px: 3 }}>
               <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>
@@ -170,6 +174,7 @@ export default function ListaPedidos() {
               <TableCell />
               <TableCell>ID</TableCell>
               <TableCell>Data</TableCell>
+              <TableCell>Cliente</TableCell>
               <TableCell>Total</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
@@ -184,7 +189,7 @@ export default function ListaPedidos() {
             ))}
             {pedidos.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                <TableCell colSpan={6} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">Nenhum pedido encontrado</Typography>
                 </TableCell>
               </TableRow>
