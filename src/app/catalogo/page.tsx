@@ -9,8 +9,11 @@ import { Box } from "@mui/material";
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-    title: `Catálogo | ${siteConfig.company.name}`,
-    description: "Faça seu pedido diretamente pelo WhatsApp",
+    title: "Catálogo de Produtos",
+    description: "Explore o catálogo de açaí cremoso premium, embalagens e utensílios da Miquinho Distribuidora. Faça seu pedido diretamente pelo WhatsApp.",
+    alternates: {
+        canonical: `${siteConfig.url}/catalogo`,
+    },
 };
 
 export default async function PaginaCatalogo() {
