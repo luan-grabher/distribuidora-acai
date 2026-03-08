@@ -46,7 +46,14 @@ export default function GraficoItensMaisVendidos({ itensMaisVendidos }: GraficoI
             ]}
             layout="horizontal"
             height={Math.max(220, itensExibidos.length * 44 + 60)}
-            margin={{ top: 20, right: 40, bottom: 40, left: 160 }}
+            margin={{
+              top: 20,
+              right: 40,
+              bottom: 40,
+              left: itensExibidos.length > 0
+                ? Math.max(160, Math.max(...itensExibidos.map((item) => item.nome.length)) * 7 + 20)
+                : 160,
+            }}
             xAxis={[{ label: 'Unidades' }]}
             sx={{
               '.MuiChartsAxis-tickLabel': { fontSize: '0.75rem' },

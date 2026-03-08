@@ -47,6 +47,7 @@ export type Pedido = {
   nome_cliente: string
   telefone_cliente: string
   criado_em: string
+  taxa_entrega: number
 }
 
 export type NovoPedido = Omit<Pedido, 'id' | 'status' | 'criado_em'> & { criado_em?: string }
@@ -56,4 +57,7 @@ export type EdicaoPedido = {
   itens?: ItemPedido[]
   total?: number
   forma_pagamento?: FormaPagamento | null
+  taxa_entrega?: number
 }
+
+export const TAXA_ENTREGA_PADRAO = 7
