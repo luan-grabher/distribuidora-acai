@@ -16,14 +16,19 @@ import Alert from '@mui/material/Alert'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
 import Collapse from '@mui/material/Collapse'
 import IconButton from '@mui/material/IconButton'
 import Button from '@mui/material/Button'
 import TextField from '@mui/material/TextField'
+import Dialog from '@mui/material/Dialog'
+import DialogTitle from '@mui/material/DialogTitle'
+import DialogContent from '@mui/material/DialogContent'
+import DialogContentText from '@mui/material/DialogContentText'
+import DialogActions from '@mui/material/DialogActions'
 import EditIcon from '@mui/icons-material/Edit'
 import SaveIcon from '@mui/icons-material/Save'
 import CloseIcon from '@mui/icons-material/Close'
+import DeleteIcon from '@mui/icons-material/Delete'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import CabecalhoPagina from '../CabecalhoPagina'
@@ -44,13 +49,15 @@ const coresPorStatus: Record<StatusPedido, 'warning' | 'info' | 'primary' | 'sec
 type PropsLinhaExpandivel = {
   pedido: Pedido
   onAtualizar: (id: string, dados: EdicaoPedido) => Promise<void>
+  onRemover: (id: string) => Promise<void>
 }
 
-function LinhaExpandivel({ pedido, onAtualizar }: PropsLinhaExpandivel) {
+function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandivel) {
   const [expandido, setExpandido] = useState(false)
   const [atualizando, setAtualizando] = useState(false)
   const [editandoPrecos, setEditandoPrecos] = useState(false)
   const [itensPedidoEditaveis, setItensPedidoEditaveis] = useState<ItemPedido[]>(pedido.itens)
+  const [confirmacaoExclusaoAberta, setConfirmacaoExclusaoAberta] = useState(false)
 
   const handleStatus = async (novoStatus: StatusPedido) => {
     setAtualizando(true)
@@ -97,6 +104,16 @@ function LinhaExpandivel({ pedido, onAtualizar }: PropsLinhaExpandivel) {
       setEditandoPrecos(false)
     } finally {
       setAtualizando(false)
+    }
+  }
+
+  const confirmarExclusao = async () => {
+    setAtualizando(true)
+    try {
+      await onRemover(pedido.id)
+    } finally {
+      setAtualizando(false)
+      setConfirmacaoExclusaoAberta(false)
     }
   }
 
@@ -180,9 +197,19 @@ function LinhaExpandivel({ pedido, onAtualizar }: PropsLinhaExpandivel) {
             </Select>
           </FormControl>
         </TableCell>
+        <TableCell align="right">
+          <IconButton
+            size="small"
+            color="error"
+            disabled={atualizando}
+            onClick={() => setConfirmacaoExclusaoAberta(true)}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </TableCell>
       </TableRow>
       <TableRow>
-        <TableCell colSpan={7} sx={{ py: 0 }}>
+        <TableCell colSpan={8} sx={{ py: 0 }}>
           <Collapse in={expandido} timeout="auto" unmountOnExit>
             <Box sx={{ py: 2, px: 3 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
@@ -264,12 +291,34 @@ function LinhaExpandivel({ pedido, onAtualizar }: PropsLinhaExpandivel) {
           </Collapse>
         </TableCell>
       </TableRow>
+      <Dialog open={confirmacaoExclusaoAberta} onClose={() => setConfirmacaoExclusaoAberta(false)}>
+        <DialogTitle>Excluir pedido</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Tem certeza que deseja excluir o pedido de <strong>{pedido.nome_cliente}</strong>? Esta ação não pode ser desfeita.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setConfirmacaoExclusaoAberta(false)} disabled={atualizando}>
+            Cancelar
+          </Button>
+          <Button
+            color="error"
+            variant="contained"
+            onClick={confirmarExclusao}
+            disabled={atualizando}
+            startIcon={atualizando ? <CircularProgress size={14} color="inherit" /> : <DeleteIcon />}
+          >
+            Excluir
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   )
 }
 
 export default function ListaPedidos() {
-  const { pedidos, carregando, erro, criarPedido, atualizarPedido } = usePedidosAdmin()
+  const { pedidos, carregando, erro, criarPedido, atualizarPedido, removerPedido } = usePedidosAdmin()
   const [formularioAberto, setFormularioAberto] = useState(false)
 
   const handleCriarPedido = async (dados: NovoPedido) => {
@@ -305,6 +354,7 @@ export default function ListaPedidos() {
               <TableCell>Total</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Pagamento</TableCell>
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -313,11 +363,12 @@ export default function ListaPedidos() {
                 key={pedido.id}
                 pedido={pedido}
                 onAtualizar={atualizarPedido}
+                onRemover={removerPedido}
               />
             ))}
             {pedidos.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 6 }}>
+                <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">Nenhum pedido encontrado</Typography>
                 </TableCell>
               </TableRow>

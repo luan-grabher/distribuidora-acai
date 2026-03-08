@@ -58,5 +58,14 @@ export function usePedidosAdmin() {
     await buscarPedidos()
   }, [buscarPedidos, redirecionarParaLoginSeNaoAutorizado])
 
-  return { pedidos, carregando, erro, criarPedido, atualizarPedido }
+  const removerPedido = useCallback(async (id: string) => {
+    const resposta = await fetch(`/api/admin/pedidos/${id}`, {
+      method: 'DELETE',
+    })
+    redirecionarParaLoginSeNaoAutorizado(resposta.status)
+    if (!resposta.ok) throw new Error(`Erro ao remover pedido: ${resposta.status}`)
+    await buscarPedidos()
+  }, [buscarPedidos, redirecionarParaLoginSeNaoAutorizado])
+
+  return { pedidos, carregando, erro, criarPedido, atualizarPedido, removerPedido }
 }
