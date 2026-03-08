@@ -162,7 +162,6 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 label="Nome do Cliente"
                 value={dadosCliente.nome_cliente}
                 onChange={(e) => setDadosCliente(prev => ({ ...prev, nome_cliente: e.target.value }))}
-                required
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -171,7 +170,6 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 label="Telefone do Cliente"
                 value={dadosCliente.telefone_cliente}
                 onChange={(e) => setDadosCliente(prev => ({ ...prev, telefone_cliente: e.target.value }))}
-                required
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
