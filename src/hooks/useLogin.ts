@@ -24,7 +24,7 @@ export function useLogin() {
         return
       }
 
-      router.push('/admin/dashboard/itens')
+      router.push('/admin/dashboard')
     } catch {
       setErro('Erro de conexão. Tente novamente.')
     } finally {
