@@ -4,6 +4,7 @@ export type StatusPedido =
   | 'em preparo'
   | 'enviado'
   | 'entregue'
+  | 'concluído'
   | 'cancelado'
 
 export const todosStatusPedido: StatusPedido[] = [
@@ -12,6 +13,7 @@ export const todosStatusPedido: StatusPedido[] = [
   'em preparo',
   'enviado',
   'entregue',
+  'concluído',
   'cancelado',
 ]
 

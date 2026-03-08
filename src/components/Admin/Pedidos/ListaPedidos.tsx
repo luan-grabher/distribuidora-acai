@@ -33,9 +33,11 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import CabecalhoPagina from '../CabecalhoPagina'
 import { usePedidosAdmin } from '@/hooks/usePedidosAdmin'
+import { useFiltrosPedidos } from '@/hooks/useFiltrosPedidos'
 import type { Pedido, StatusPedido, FormaPagamento, NovoPedido, ItemPedido, EdicaoPedido } from '@/types/pedido'
 import { todosStatusPedido, todasFormasPagamento } from '@/types/pedido'
 import FormularioPedido from './FormularioPedido'
+import FiltrosPedidosComponent from './FiltrosPedidos'
 
 const coresPorStatus: Record<StatusPedido, 'warning' | 'info' | 'primary' | 'secondary' | 'success' | 'error'> = {
   'aguardando confirmação': 'warning',
@@ -43,6 +45,7 @@ const coresPorStatus: Record<StatusPedido, 'warning' | 'info' | 'primary' | 'sec
   'em preparo': 'primary',
   'enviado': 'secondary',
   'entregue': 'success',
+  'concluído': 'success',
   'cancelado': 'error',
 }
 
@@ -319,6 +322,7 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandive
 
 export default function ListaPedidos() {
   const { pedidos, carregando, erro, criarPedido, atualizarPedido, removerPedido } = usePedidosAdmin()
+  const { filtros, pedidosFiltrados, alterarFiltro, limparFiltros, possuiFiltrosAtivos } = useFiltrosPedidos(pedidos)
   const [formularioAberto, setFormularioAberto] = useState(false)
 
   const handleCriarPedido = async (dados: NovoPedido) => {
@@ -343,6 +347,13 @@ export default function ListaPedidos() {
 
       {erro && <Alert severity="error">{erro}</Alert>}
 
+      <FiltrosPedidosComponent
+        filtros={filtros}
+        onAlterarFiltro={alterarFiltro}
+        onLimparFiltros={limparFiltros}
+        possuiFiltrosAtivos={possuiFiltrosAtivos}
+      />
+
       <TableContainer component={Paper} sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         <Table>
           <TableHead>
@@ -358,7 +369,7 @@ export default function ListaPedidos() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {pedidos.map((pedido) => (
+            {pedidosFiltrados.map((pedido) => (
               <LinhaExpandivel
                 key={pedido.id}
                 pedido={pedido}
@@ -366,7 +377,7 @@ export default function ListaPedidos() {
                 onRemover={removerPedido}
               />
             ))}
-            {pedidos.length === 0 && (
+            {pedidosFiltrados.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
                   <Typography color="text.secondary">Nenhum pedido encontrado</Typography>
