@@ -10,6 +10,7 @@ import Tab from '@mui/material/Tab'
 import Image from 'next/image'
 import Link from 'next/link'
 import LogoutIcon from '@mui/icons-material/Logout'
+import HomeIcon from '@mui/icons-material/Home'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
 import { useLogin } from '@/hooks/useLogin'
@@ -17,8 +18,9 @@ import { siteConfig } from '@/config/siteConfig'
 import { usePathname, useRouter } from 'next/navigation'
 
 const paginasAdmin = [
-  { label: 'Itens do Catálogo', href: '/admin/dashboard/itens', icon: <InventoryIcon /> },
-  { label: 'Pedidos', href: '/admin/dashboard/pedidos', icon: <ShoppingBagIcon /> },
+  { label: 'Início', href: '/admin/dashboard', exato: true, icon: <HomeIcon /> },
+  { label: 'Itens do Catálogo', href: '/admin/dashboard/itens', exato: false, icon: <InventoryIcon /> },
+  { label: 'Pedidos', href: '/admin/dashboard/pedidos', exato: false, icon: <ShoppingBagIcon /> },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -26,7 +28,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const router = useRouter()
 
-  const abaAtiva = paginasAdmin.findIndex((pagina) => pathname.startsWith(pagina.href))
+  const abaAtiva = paginasAdmin.findIndex((pagina) =>
+    pagina.exato ? pathname === pagina.href : pathname.startsWith(pagina.href)
+  )
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#F4F6F9' }}>
