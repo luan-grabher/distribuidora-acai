@@ -20,16 +20,12 @@ export type FormaPagamento =
   | 'pix'
   | 'cartão de crédito'
   | 'cartão de débito'
-  | 'boleto'
-  | 'transferência bancária'
 
 export const todasFormasPagamento: FormaPagamento[] = [
   'dinheiro',
   'pix',
   'cartão de crédito',
   'cartão de débito',
-  'boleto',
-  'transferência bancária',
 ]
 
 export type ItemPedido = {
