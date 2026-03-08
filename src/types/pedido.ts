@@ -17,6 +17,8 @@ export const todosStatusPedido: StatusPedido[] = [
   'cancelado',
 ]
 
+export const statusPedidoConsideradoVenda: StatusPedido[] = ['enviado', 'entregue', 'concluído']
+
 export type FormaPagamento =
   | 'dinheiro'
   | 'pix'

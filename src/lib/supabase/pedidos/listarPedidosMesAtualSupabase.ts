@@ -1,5 +1,6 @@
 import { clienteSupabaseAdmin } from '../clienteSupabase'
 import type { Pedido } from '@/types/pedido'
+import { statusPedidoConsideradoVenda } from '@/types/pedido'
 
 export async function listarPedidosMesAtualSupabase(): Promise<Pedido[]> {
   const agora = new Date()
@@ -11,7 +12,7 @@ export async function listarPedidosMesAtualSupabase(): Promise<Pedido[]> {
     .select('*')
     .gte('criado_em', inicioDoMes)
     .lt('criado_em', fimDoMes)
-    .neq('status', 'cancelado')
+    .in('status', statusPedidoConsideradoVenda)
     .order('criado_em', { ascending: true })
 
   if (error) throw new Error(error.message)
