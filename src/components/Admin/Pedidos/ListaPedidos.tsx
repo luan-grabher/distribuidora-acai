@@ -100,7 +100,7 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandive
   const salvarEdicaoPrecos = async () => {
     const algumPrecoInvalido = itensPedidoEditaveis.some(item => item.preco <= 0)
     if (algumPrecoInvalido) return
-    const novoTotal = itensPedidoEditaveis.reduce((soma, item) => soma + item.subtotal, 0)
+    const novoTotal = itensPedidoEditaveis.reduce((soma, item) => soma + item.subtotal, 0) + pedido.taxa_entrega
     setAtualizando(true)
     try {
       await onAtualizar(pedido.id, { itens: itensPedidoEditaveis, total: novoTotal })
@@ -120,7 +120,7 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandive
     }
   }
 
-  const totalEditavel = itensPedidoEditaveis.reduce((soma, item) => soma + item.subtotal, 0)
+  const totalEditavel = itensPedidoEditaveis.reduce((soma, item) => soma + item.subtotal, 0) + pedido.taxa_entrega
   const algumPrecoInvalido = itensPedidoEditaveis.some(item => item.preco <= 0)
 
   const dataFormatada = new Date(pedido.criado_em).toLocaleString('pt-BR', {
@@ -282,6 +282,14 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandive
                       <TableCell align="right">R$ {item.subtotal.toFixed(2).replace('.', ',')}</TableCell>
                     </TableRow>
                   ))}
+                  {pedido.taxa_entrega > 0 && (
+                    <TableRow>
+                      <TableCell colSpan={3} align="right" sx={{ color: 'text.secondary' }}>Tele-entrega</TableCell>
+                      <TableCell align="right" sx={{ color: 'text.secondary' }}>
+                        R$ {pedido.taxa_entrega.toFixed(2).replace('.', ',')}
+                      </TableCell>
+                    </TableRow>
+                  )}
                   <TableRow>
                     <TableCell colSpan={3} align="right" sx={{ fontWeight: 700 }}>Total</TableCell>
                     <TableCell align="right" sx={{ fontWeight: 700, color: 'primary.main' }}>

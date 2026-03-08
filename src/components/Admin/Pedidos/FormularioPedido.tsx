@@ -23,10 +23,12 @@ import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
 import IconButton from '@mui/material/IconButton'
 import Divider from '@mui/material/Divider'
+import Switch from '@mui/material/Switch'
+import FormControlLabel from '@mui/material/FormControlLabel'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import type { NovoPedido, ItemPedido, FormaPagamento } from '@/types/pedido'
-import { todasFormasPagamento } from '@/types/pedido'
+import { todasFormasPagamento, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
 import type { Item } from '@/types/item'
 
 type PropsFormularioPedido = {
@@ -51,6 +53,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
   const [precoItemSelecionado, setPrecoItemSelecionado] = useState<number | ''>('')
   const [quantidadeItemSelecionado, setQuantidadeItemSelecionado] = useState(1)
   const [itensDoPedido, setItensDoPedido] = useState<ItemPedido[]>([])
+  const [teleEntrega, setTeleEntrega] = useState(false)
+  const [taxaEntrega, setTaxaEntrega] = useState<number>(TAXA_ENTREGA_PADRAO)
   const [salvando, setSalvando] = useState(false)
   const [carregandoItens, setCarregandoItens] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -75,6 +79,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
       setDataPedido(obterDataAtualParaCampoDatetime())
       setFormaPagamento('')
       setItensDoPedido([])
+      setTeleEntrega(false)
+      setTaxaEntrega(TAXA_ENTREGA_PADRAO)
       setItemSelecionadoId('')
       setPrecoItemSelecionado('')
       setQuantidadeItemSelecionado(1)
@@ -84,6 +90,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
   }, [aberto, buscarItensCatalogo])
 
   const totalDoPedido = itensDoPedido.reduce((soma, item) => soma + item.subtotal, 0)
+  const taxaEntregaFinal = teleEntrega ? taxaEntrega : 0
+  const totalComEntrega = totalDoPedido + taxaEntregaFinal
 
   const adicionarItemAoPedido = () => {
     const itemCatalogo = itensCatalogo.find(i => i.id === itemSelecionadoId)
@@ -133,7 +141,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
         ...dadosCliente,
         forma_pagamento: formaPagamento === '' ? null : formaPagamento,
         itens: itensDoPedido,
-        total: totalDoPedido,
+        total: totalComEntrega,
+        taxa_entrega: taxaEntregaFinal,
         criado_em: new Date(dataPedido).toISOString(),
       })
       onFechar()
@@ -202,6 +211,37 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 </Select>
               </FormControl>
             </Grid>
+
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Entrega
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={teleEntrega}
+                    onChange={(e) => setTeleEntrega(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Tele-entrega"
+              />
+            </Grid>
+            {teleEntrega && (
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Taxa de Entrega (R$)"
+                  type="number"
+                  inputProps={{ min: 0, step: '0.01' }}
+                  value={taxaEntrega}
+                  onChange={(e) => setTaxaEntrega(parseFloat(e.target.value) || 0)}
+                />
+              </Grid>
+            )}
 
             <Grid size={12}>
               <Divider sx={{ my: 1 }} />
@@ -301,10 +341,19 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                         </TableCell>
                       </TableRow>
                     ))}
+                    {teleEntrega && (
+                      <TableRow>
+                        <TableCell colSpan={3} align="right" sx={{ color: 'text.secondary' }}>Tele-entrega</TableCell>
+                        <TableCell align="right" sx={{ color: 'text.secondary' }}>
+                          R$ {taxaEntregaFinal.toFixed(2).replace('.', ',')}
+                        </TableCell>
+                        <TableCell />
+                      </TableRow>
+                    )}
                     <TableRow>
                       <TableCell colSpan={3} align="right" sx={{ fontWeight: 700 }}>Total</TableCell>
                       <TableCell align="right" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                        R$ {totalDoPedido.toFixed(2).replace('.', ',')}
+                        R$ {totalComEntrega.toFixed(2).replace('.', ',')}
                       </TableCell>
                       <TableCell />
                     </TableRow>
