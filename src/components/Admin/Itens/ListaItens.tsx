@@ -23,8 +23,8 @@ import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
-import AddIcon from '@mui/icons-material/Add'
 import FormularioItem from './FormularioItem'
+import CabecalhoPagina from '../CabecalhoPagina'
 import { useItensAdmin } from '@/hooks/useItensAdmin'
 import type { Item, NovoItem, EdicaoItem } from '@/types/item'
 
@@ -70,22 +70,14 @@ export default function ListaItens() {
   }
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight={700}>
-          Itens do Catálogo
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={abrirNovoItem}
-          sx={{ borderRadius: '50px' }}
-        >
-          Novo Item
-        </Button>
-      </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <CabecalhoPagina
+        titulo="Itens do Catálogo"
+        labelBotao="Novo Item"
+        onClicarBotao={abrirNovoItem}
+      />
 
-      {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
+      {erro && <Alert severity="error">{erro}</Alert>}
 
       <TableContainer component={Paper} sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         <Table>

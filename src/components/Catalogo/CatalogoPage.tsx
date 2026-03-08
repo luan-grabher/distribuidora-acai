@@ -56,6 +56,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
         subtotal: item.preco * item.quantidade,
       })),
       total: totalPreco,
+      forma_pagamento: null,
       nome_cliente: dadosCliente.nome,
       telefone_cliente: dadosCliente.telefone,
     }

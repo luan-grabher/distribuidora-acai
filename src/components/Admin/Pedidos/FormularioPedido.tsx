@@ -25,7 +25,8 @@ import IconButton from '@mui/material/IconButton'
 import Divider from '@mui/material/Divider'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
-import type { NovoPedido, ItemPedido } from '@/types/pedido'
+import type { NovoPedido, ItemPedido, FormaPagamento } from '@/types/pedido'
+import { todasFormasPagamento } from '@/types/pedido'
 import type { Item } from '@/types/item'
 
 type PropsFormularioPedido = {
@@ -35,7 +36,6 @@ type PropsFormularioPedido = {
 }
 
 const dadosClienteIniciais = { nome_cliente: '', telefone_cliente: '' }
-
 const obterDataAtualParaCampoDatetime = () => {
   const agora = new Date()
   agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset())
@@ -45,6 +45,7 @@ const obterDataAtualParaCampoDatetime = () => {
 export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFormularioPedido) {
   const [dadosCliente, setDadosCliente] = useState(dadosClienteIniciais)
   const [dataPedido, setDataPedido] = useState(obterDataAtualParaCampoDatetime)
+  const [formaPagamento, setFormaPagamento] = useState<FormaPagamento | ''>('')
   const [itensCatalogo, setItensCatalogo] = useState<Item[]>([])
   const [itemSelecionadoId, setItemSelecionadoId] = useState('')
   const [precoItemSelecionado, setPrecoItemSelecionado] = useState<number | ''>('')
@@ -72,6 +73,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
     if (aberto) {
       setDadosCliente(dadosClienteIniciais)
       setDataPedido(obterDataAtualParaCampoDatetime())
+      setFormaPagamento('')
       setItensDoPedido([])
       setItemSelecionadoId('')
       setPrecoItemSelecionado('')
@@ -127,7 +129,13 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
     setSalvando(true)
     setErro(null)
     try {
-      await onSalvar({ ...dadosCliente, itens: itensDoPedido, total: totalDoPedido, criado_em: new Date(dataPedido).toISOString() })
+      await onSalvar({
+        ...dadosCliente,
+        forma_pagamento: formaPagamento === '' ? null : formaPagamento,
+        itens: itensDoPedido,
+        total: totalDoPedido,
+        criado_em: new Date(dataPedido).toISOString(),
+      })
       onFechar()
     } catch {
       setErro('Erro ao criar pedido. Tente novamente.')
@@ -176,6 +184,25 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 slotProps={{ inputLabel: { shrink: true } }}
                 required
               />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth>
+                <InputLabel>Forma de Pagamento</InputLabel>
+                <Select
+                  value={formaPagamento}
+                  label="Forma de Pagamento"
+                  onChange={(e) => setFormaPagamento(e.target.value as FormaPagamento | '')}
+                >
+                  <MenuItem value="">
+                    <Typography variant="body2" color="text.secondary">Não informado</Typography>
+                  </MenuItem>
+                  {todasFormasPagamento.map((forma) => (
+                    <MenuItem key={forma} value={forma} sx={{ textTransform: 'capitalize' }}>
+                      {forma}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
 
             <Grid size={12}>
