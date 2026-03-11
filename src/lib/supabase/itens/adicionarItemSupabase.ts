@@ -1,8 +1,8 @@
-import { clienteSupabaseAdmin } from '../clienteSupabase'
+import { getClienteSupabaseAdmin } from '../clienteSupabase'
 import type { Item, NovoItem } from '@/types/item'
 
 export async function adicionarItemSupabase(item: NovoItem): Promise<Item> {
-  const { data, error } = await clienteSupabaseAdmin
+  const { data, error } = await getClienteSupabaseAdmin()
     .from('itens_catalogo')
     .insert(item)
     .select()

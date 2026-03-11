@@ -1,8 +1,8 @@
-import { clienteSupabaseAdmin } from '../clienteSupabase'
+import { getClienteSupabaseAdmin } from '../clienteSupabase'
 import type { Item } from '@/types/item'
 
 export async function listarItensSupabase(): Promise<Item[]> {
-  const { data, error } = await clienteSupabaseAdmin
+  const { data, error } = await getClienteSupabaseAdmin()
     .from('itens_catalogo')
     .select('*')
     .eq('ativo', true)
@@ -13,7 +13,7 @@ export async function listarItensSupabase(): Promise<Item[]> {
 }
 
 export async function listarTodosItensSupabase(): Promise<Item[]> {
-  const { data, error } = await clienteSupabaseAdmin
+  const { data, error } = await getClienteSupabaseAdmin()
     .from('itens_catalogo')
     .select('*')
     .order('nome', { ascending: true })

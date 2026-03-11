@@ -1,7 +1,7 @@
-import { clienteSupabase } from '../clienteSupabase'
+import { getClienteSupabase } from '../clienteSupabase'
 
 export async function loginSupabase(email: string, senha: string) {
-  const { data, error } = await clienteSupabase.auth.signInWithPassword({
+  const { data, error } = await getClienteSupabase().auth.signInWithPassword({
     email,
     password: senha,
   })

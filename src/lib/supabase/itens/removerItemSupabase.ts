@@ -1,7 +1,7 @@
-import { clienteSupabaseAdmin } from '../clienteSupabase'
+import { getClienteSupabaseAdmin } from '../clienteSupabase'
 
 export async function removerItemSupabase(id: string): Promise<void> {
-  const { error } = await clienteSupabaseAdmin
+  const { error } = await getClienteSupabaseAdmin()
     .from('itens_catalogo')
     .delete()
     .eq('id', id)

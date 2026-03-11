@@ -1,7 +1,7 @@
-import { clienteSupabaseAdmin } from '../clienteSupabase'
+import { getClienteSupabaseAdmin } from '../clienteSupabase'
 
 export async function removerPedidoSupabase(id: string): Promise<void> {
-  const { error } = await clienteSupabaseAdmin
+  const { error } = await getClienteSupabaseAdmin()
     .from('pedidos')
     .delete()
     .eq('id', id)
