@@ -1,4 +1,4 @@
-import { clienteSupabaseAdmin } from '../clienteSupabase'
+import { getClienteSupabaseAdmin } from '../clienteSupabase'
 import type { Pedido } from '@/types/pedido'
 import { statusPedidoConsideradoVenda } from '@/types/pedido'
 
@@ -7,7 +7,7 @@ export async function listarPedidosMesAtualSupabase(): Promise<Pedido[]> {
   const inicioDoMes = new Date(agora.getFullYear(), agora.getMonth(), 1).toISOString()
   const fimDoMes = new Date(agora.getFullYear(), agora.getMonth() + 1, 1).toISOString()
 
-  const { data, error } = await clienteSupabaseAdmin
+  const { data, error } = await getClienteSupabaseAdmin()
     .from('pedidos')
     .select('*')
     .gte('criado_em', inicioDoMes)

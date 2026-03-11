@@ -90,11 +90,9 @@ export default function Products() {
           ))}
         </Grid>
         <Box sx={{ textAlign: 'center', mt: 4 }}>
-          <Box component="a" href="/catalogo" sx={{ textDecoration: 'none' }}>
-            <Button component="span" variant="outlined" sx={{ textTransform: 'none' }}>
-              Veja nosso catálogo completo
-            </Button>
-          </Box>
+          <Button component="a" href={siteConfig.nav.catalogoHref} variant="outlined" sx={{ textTransform: 'none' }}>
+            Veja nosso catálogo completo
+          </Button>
         </Box>
       </Container>
     </Box>
