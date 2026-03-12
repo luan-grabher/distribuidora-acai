@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { editarItem } from '@/lib/itens/editarItem'
 import { removerItem } from '@/lib/itens/removerItem'
 import { verificarSessao } from '@/lib/auth/verificarSessao'
-import { revalidatePath } from 'next/cache'
+import { invalidarEAquecerCacheItensEmSegundoPlano } from '@/lib/itens/cacheItens'
 
 async function autenticarAdmin(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
@@ -18,7 +18,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params
     const corpo = await request.json()
     const item = await editarItem(id, corpo)
-    revalidatePath('/catalogo')
+    invalidarEAquecerCacheItensEmSegundoPlano()
     return NextResponse.json(item)
   } catch {
     return NextResponse.json({ erro: 'Erro ao editar item' }, { status: 500 })
@@ -32,7 +32,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   try {
     const { id } = await params
     await removerItem(id)
-    revalidatePath('/catalogo')
+    invalidarEAquecerCacheItensEmSegundoPlano()
     return NextResponse.json({ sucesso: true })
   } catch {
     return NextResponse.json({ erro: 'Erro ao remover item' }, { status: 500 })

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { listarTodosItens } from '@/lib/itens/listarItens'
 import { adicionarItem } from '@/lib/itens/adicionarItem'
 import { verificarSessao } from '@/lib/auth/verificarSessao'
-import { revalidatePath } from 'next/cache'
+import { invalidarEAquecerCacheItensEmSegundoPlano } from '@/lib/itens/cacheItens'
 
 async function autenticarAdmin(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   try {
     const corpo = await request.json()
     const item = await adicionarItem(corpo)
-    revalidatePath('/catalogo')
+    invalidarEAquecerCacheItensEmSegundoPlano()
     return NextResponse.json(item, { status: 201 })
   } catch {
     return NextResponse.json({ erro: 'Erro ao adicionar item' }, { status: 500 })

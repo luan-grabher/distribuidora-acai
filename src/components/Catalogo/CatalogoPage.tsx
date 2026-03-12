@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Typography from '@mui/material/Typography'
@@ -30,6 +30,10 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
 
   const [confirmAberto, setConfirmAberto] = useState(false)
   const [textoPesquisa, setTextoPesquisa] = useState('')
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [])
 
   const itensFiltrados = useMemo(() => {
     const termoBusca = textoPesquisa.toLowerCase().trim()
