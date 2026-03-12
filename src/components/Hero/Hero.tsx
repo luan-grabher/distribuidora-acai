@@ -124,7 +124,6 @@ export default function Hero() {
                 {siteConfig.hero.ctaSecondaryText}
               </Button>
 
-              {/* Botão 'Ver Catálogo' movido para a seção de contato */}
             </Box>
           </Box>
 
