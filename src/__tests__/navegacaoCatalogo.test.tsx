@@ -103,6 +103,12 @@ describe('Botões de navegação para o catálogo', () => {
             fireEvent.click(botaoProdutos)
             expect(document.querySelector).toHaveBeenCalledWith('#products')
         })
+
+        it('botão Ver Catálogo na seção hero tem href correto para /catalogo', () => {
+            render(<Hero />)
+            const linkCatalogo = screen.getByRole('link', { name: /ver catálogo/i })
+            expect(linkCatalogo).toHaveAttribute('href', siteConfig.nav.catalogoHref)
+        })
     })
 
     describe('Products', () => {

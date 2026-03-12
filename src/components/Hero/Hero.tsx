@@ -5,6 +5,8 @@ import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Image from 'next/image'
+import Link from 'next/link'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
 import { siteConfig } from '@/config/siteConfig'
 
 export default function Hero() {
@@ -123,7 +125,26 @@ export default function Hero() {
                 {siteConfig.hero.ctaSecondaryText}
               </Button>
 
-              {/* Botão 'Ver Catálogo' movido para a seção de contato */}
+              <Button
+                component={Link}
+                href={siteConfig.nav.catalogoHref}
+                variant="outlined"
+                size="large"
+                startIcon={<MenuBookIcon />}
+                sx={{
+                  borderColor: siteConfig.colors.accent,
+                  color: siteConfig.colors.accent,
+                  px: 4,
+                  '&:hover': {
+                    borderColor: siteConfig.colors.accent,
+                    background: `rgba(249, 199, 21, 0.1)`,
+                    transform: 'translateY(-2px)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                {siteConfig.hero.ctaCatalogText}
+              </Button>
             </Box>
           </Box>
 
