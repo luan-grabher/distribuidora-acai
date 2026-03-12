@@ -29,6 +29,7 @@ export default function Contact() {
         sx={{
           position: 'absolute',
           inset: 0,
+          pointerEvents: 'none',
           backgroundImage: 'radial-gradient(circle at 30% 50%, rgba(249, 199, 21, 0.06) 0%, transparent 60%), radial-gradient(circle at 70% 50%, rgba(46, 125, 50, 0.08) 0%, transparent 60%)',
         }}
       />
@@ -105,17 +106,16 @@ export default function Contact() {
           <Button
             component={Link}
             href={siteConfig.nav.catalogoHref}
-            variant="contained"
+            variant="outlined"
             size="large"
             startIcon={<MenuBookIcon />}
             sx={{
-              background: 'rgba(255,255,255,0.15)',
+              borderColor: 'rgba(255,255,255,0.5)',
               color: siteConfig.colors.textLight,
-              border: '1px solid rgba(255,255,255,0.3)',
-              backdropFilter: 'blur(10px)',
               px: 4,
               '&:hover': {
-                background: 'rgba(255,255,255,0.25)',
+                borderColor: siteConfig.colors.textLight,
+                background: 'rgba(255,255,255,0.1)',
                 transform: 'translateY(-2px)',
               },
               transition: 'all 0.3s ease',

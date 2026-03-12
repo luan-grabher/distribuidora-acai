@@ -45,7 +45,6 @@ export const siteConfig = {
         subtitle: "Açaí produzido com paixão e tradição. Qualidade premium direto do produtor para o seu negócio crescer.",
         ctaText: "Fazer Pedido",
         ctaSecondaryText: "Conheça Nossos Produtos",
-        ctaCatalogText: "Ver Catálogo",
     },
     about: {
         overline: "Quem Somos",
