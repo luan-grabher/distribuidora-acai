@@ -16,6 +16,7 @@ import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
 import UploadFileIcon from '@mui/icons-material/UploadFile'
 import type { Item, NovoItem, EdicaoItem } from '@/types/item'
+import { redimensionarImagemNoCliente } from '@/lib/itens/redimensionarImagemNoCliente'
 
 type PropsFormularioItem = {
   aberto: boolean
@@ -40,8 +41,8 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
   const [previewSrc, setPreviewSrc] = useState<string | null>(null)
   const [previewCarregando, setPreviewCarregando] = useState(false)
   const [previewErro, setPreviewErro] = useState(false)
+  const [estaFazendoUploadDeImagem, setEstaFazendoUploadDeImagem] = useState(false)
   const inputArquivoRef = useRef<HTMLInputElement>(null)
-  const imagemCarregadaDoArquivoLocal = dados.imagem_url.startsWith('data:')
 
   useEffect(() => {
     setDados(itemEdicao ? {
@@ -67,11 +68,6 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
       setPreviewErro(false)
       return
     }
-    if (imagemCarregadaDoArquivoLocal) {
-      setPreviewSrc(dados.imagem_url)
-      setPreviewErro(false)
-      return
-    }
     carregarPreviewDeUrl(dados.imagem_url)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dados.imagem_url])
@@ -93,18 +89,33 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
     img.src = url
   }
 
-  const handleArquivoSelecionado = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleArquivoSelecionado = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const arquivo = e.target.files?.[0]
     if (!arquivo) return
-    const leitor = new FileReader()
-    leitor.onload = (evento) => {
-      const base64 = evento.target?.result as string
-      handleChange('imagem_url', base64)
+
+    setEstaFazendoUploadDeImagem(true)
+    setErro(null)
+
+    try {
+      const arquivoRedimensionado = await redimensionarImagemNoCliente(arquivo)
+      const formData = new FormData()
+      formData.append('arquivo', arquivoRedimensionado)
+
+      const resposta = await fetch('/api/admin/itens/imagem', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!resposta.ok) throw new Error('Falha no upload')
+
+      const { url } = await resposta.json()
+      handleChange('imagem_url', url)
+    } catch {
+      setErro('Erro ao fazer upload da imagem. Tente novamente.')
+    } finally {
+      setEstaFazendoUploadDeImagem(false)
+      if (inputArquivoRef.current) inputArquivoRef.current.value = ''
     }
-    leitor.onerror = () => {
-      setPreviewErro(true)
-    }
-    leitor.readAsDataURL(arquivo)
   }
 
   const handleChange = (campo: keyof NovoItem, valor: string | number | boolean) => {
@@ -158,11 +169,10 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
               <TextField
                 fullWidth
                 label="URL da Imagem"
-                value={imagemCarregadaDoArquivoLocal ? '' : dados.imagem_url}
+                value={dados.imagem_url}
                 onChange={(e) => handleChange('imagem_url', e.target.value)}
                 placeholder="https://exemplo.com/imagem.jpg"
-                disabled={imagemCarregadaDoArquivoLocal}
-                helperText={imagemCarregadaDoArquivoLocal ? 'Imagem carregada do arquivo local' : ''}
+                disabled={estaFazendoUploadDeImagem}
               />
             </Grid>
             <Grid size={12}>
@@ -178,6 +188,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 startIcon={<UploadFileIcon />}
                 onClick={() => inputArquivoRef.current?.click()}
                 fullWidth
+                disabled={estaFazendoUploadDeImagem}
                 sx={{ borderRadius: '8px', py: 1.5 }}
               >
                 Carregar imagem do computador
@@ -186,7 +197,9 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
             <Grid size={12}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Box sx={{ width: 120, height: 120, bgcolor: 'background.default', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
-                  {previewCarregando ? (
+                  {estaFazendoUploadDeImagem ? (
+                    <CircularProgress size={24} />
+                  ) : previewCarregando ? (
                     <CircularProgress size={24} />
                   ) : previewSrc ? (
                     <Box component="img" src={previewSrc} alt="Preview" sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -198,16 +211,18 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 </Box>
                 <Box>
                   <Typography component="span" sx={{ display: 'block', fontWeight: 600 }}>Preview da Imagem</Typography>
-                  {imagemCarregadaDoArquivoLocal ? (
+                  {dados.imagem_url ? (
                     <Box>
-                      <Typography variant="body2" color="success.main">Imagem carregada do arquivo</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {dados.imagem_url}
+                      </Typography>
                       <Button size="small" color="error" onClick={() => handleChange('imagem_url', '')} sx={{ mt: 0.5, px: 0 }}>
                         Remover imagem
                       </Button>
                     </Box>
                   ) : (
-                    <Typography sx={{ color: 'text.secondary', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {dados.imagem_url || 'Cole uma URL ou carregue uma imagem'}
+                    <Typography sx={{ color: 'text.secondary', maxWidth: 360 }}>
+                      Cole uma URL ou carregue uma imagem
                     </Typography>
                   )}
                 </Box>

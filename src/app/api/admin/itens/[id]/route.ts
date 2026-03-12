@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { editarItem } from '@/lib/itens/editarItem'
 import { removerItem } from '@/lib/itens/removerItem'
+import { buscarItemPorId } from '@/lib/itens/buscarItemPorId'
 import { verificarSessao } from '@/lib/auth/verificarSessao'
 import { invalidarEAquecerCacheItensEmSegundoPlano } from '@/lib/itens/cacheItens'
+import { excluirImagemDoStorage } from '@/lib/supabase/storage/excluirImagemDoStorage'
 
 async function autenticarAdmin(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
@@ -17,6 +19,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
   try {
     const { id } = await params
     const corpo = await request.json()
+
+    const itemAtual = await buscarItemPorId(id)
+    const imagemUrlNova = corpo.imagem_url
+    const imagemUrlAntiga = itemAtual?.imagem_url
+
+    if (imagemUrlAntiga && imagemUrlNova !== imagemUrlAntiga) {
+      try {
+        await excluirImagemDoStorage(imagemUrlAntiga)
+      } catch {
+      }
+    }
+
     const item = await editarItem(id, corpo)
     invalidarEAquecerCacheItensEmSegundoPlano()
     return NextResponse.json(item)
@@ -31,6 +45,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
   try {
     const { id } = await params
+
+    const itemAtual = await buscarItemPorId(id)
+    if (itemAtual?.imagem_url) {
+      try {
+        await excluirImagemDoStorage(itemAtual.imagem_url)
+      } catch {
+      }
+    }
+
     await removerItem(id)
     invalidarEAquecerCacheItensEmSegundoPlano()
     return NextResponse.json({ sucesso: true })
