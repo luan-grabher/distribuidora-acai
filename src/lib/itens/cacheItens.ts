@@ -15,6 +15,6 @@ export const listarItensComCache = unstable_cache(
 )
 
 export function invalidarEAquecerCacheItensEmSegundoPlano(): void {
-  revalidateTag(TAG_CACHE_CATALOGO_ITENS)
+  revalidateTag(TAG_CACHE_CATALOGO_ITENS, { expire: TRINTA_DIAS_EM_SEGUNDOS })
   after(() => listarItensComCache().catch(() => {}))
 }
