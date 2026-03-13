@@ -5,17 +5,21 @@ import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import IconButton from '@mui/material/IconButton'
 import Tabs from '@mui/material/Tabs'
 import Tab from '@mui/material/Tab'
 import Image from 'next/image'
 import Link from 'next/link'
 import LogoutIcon from '@mui/icons-material/Logout'
+import FullscreenIcon from '@mui/icons-material/Fullscreen'
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
 import HomeIcon from '@mui/icons-material/Home'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
 import { useLogin } from '@/hooks/useLogin'
 import { siteConfig } from '@/config/siteConfig'
 import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 const paginasAdmin = [
   { label: 'Início', href: '/admin/dashboard', exato: true, icon: <HomeIcon /> },
@@ -27,6 +31,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const { fazerLogout } = useLogin()
   const pathname = usePathname()
   const router = useRouter()
+  const [estaEmTelaCheia, setEstaEmTelaCheia] = useState(false)
+
+  useEffect(() => {
+    const atualizarEstadoTelaCheia = () => setEstaEmTelaCheia(!!document.fullscreenElement)
+    document.addEventListener('fullscreenchange', atualizarEstadoTelaCheia)
+    return () => document.removeEventListener('fullscreenchange', atualizarEstadoTelaCheia)
+  }, [])
+
+  const alternarTelaCheia = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {})
+    } else {
+      document.exitFullscreen().catch(() => {})
+    }
+  }
 
   const abaAtiva = paginasAdmin.findIndex((pagina) =>
     pagina.exato ? pathname === pagina.href : pathname.startsWith(pagina.href)
@@ -56,14 +75,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               Admin — {siteConfig.company.name}
             </Typography>
           </Link>
-          <Button
-            color="inherit"
-            startIcon={<LogoutIcon />}
-            onClick={fazerLogout}
-            sx={{ color: 'white' }}
-          >
-            Sair
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton onClick={alternarTelaCheia} sx={{ color: 'white' }} aria-label={estaEmTelaCheia ? 'Sair de tela cheia' : 'Ativar tela cheia'}>
+              {estaEmTelaCheia ? <FullscreenExitIcon /> : <FullscreenIcon />}
+            </IconButton>
+            <Button
+              color="inherit"
+              startIcon={<LogoutIcon />}
+              onClick={fazerLogout}
+              sx={{ color: 'white' }}
+            >
+              Sair
+            </Button>
+          </Box>
         </Toolbar>
         <Tabs
           value={abaAtiva === -1 ? 0 : abaAtiva}
