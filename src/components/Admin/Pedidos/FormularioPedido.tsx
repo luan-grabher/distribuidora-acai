@@ -25,6 +25,8 @@ import IconButton from '@mui/material/IconButton'
 import Divider from '@mui/material/Divider'
 import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
+import Chip from '@mui/material/Chip'
+import InputAdornment from '@mui/material/InputAdornment'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import type { NovoPedido, ItemPedido, FormaPagamento } from '@/types/pedido'
@@ -55,6 +57,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
   const [itensDoPedido, setItensDoPedido] = useState<ItemPedido[]>([])
   const [teleEntrega, setTeleEntrega] = useState(false)
   const [taxaEntrega, setTaxaEntrega] = useState<number>(TAXA_ENTREGA_PADRAO)
+  const [precisaDeTroco, setPrecisaDeTroco] = useState(false)
+  const [valorPagoEmDinheiro, setValorPagoEmDinheiro] = useState<number | ''>('')
   const [salvando, setSalvando] = useState(false)
   const [carregandoItens, setCarregandoItens] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -81,6 +85,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
       setItensDoPedido([])
       setTeleEntrega(false)
       setTaxaEntrega(TAXA_ENTREGA_PADRAO)
+      setPrecisaDeTroco(false)
+      setValorPagoEmDinheiro('')
       setItemSelecionadoId('')
       setPrecoItemSelecionado('')
       setQuantidadeItemSelecionado(1)
@@ -92,6 +98,21 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
   const totalDoPedido = itensDoPedido.reduce((soma, item) => soma + item.subtotal, 0)
   const taxaEntregaFinal = teleEntrega ? taxaEntrega : 0
   const totalComEntrega = totalDoPedido + taxaEntregaFinal
+
+  const pagamentoEhDinheiro = formaPagamento === 'dinheiro'
+  const trocoCalculado = precisaDeTroco && pagamentoEhDinheiro && typeof valorPagoEmDinheiro === 'number'
+    ? valorPagoEmDinheiro - totalComEntrega
+    : null
+
+  const atalhosTroco = [20, 50, 100, 200].filter(valor => valor >= totalComEntrega)
+
+  const alterarFormaPagamento = (novaForma: FormaPagamento | '') => {
+    setFormaPagamento(novaForma)
+    if (novaForma !== 'dinheiro') {
+      setPrecisaDeTroco(false)
+      setValorPagoEmDinheiro('')
+    }
+  }
 
   const adicionarItemAoPedido = () => {
     const itemCatalogo = itensCatalogo.find(i => i.id === itemSelecionadoId)
@@ -160,91 +181,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
         {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
         <Box component="form" id="formulario-pedido" onSubmit={handleSubmit} sx={{ mt: 1 }}>
           <Grid container spacing={2}>
-            <Grid size={12}>
-              <Typography variant="subtitle1" fontWeight={700}>
-                Dados do Cliente
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Nome do Cliente"
-                value={dadosCliente.nome_cliente}
-                onChange={(e) => setDadosCliente(prev => ({ ...prev, nome_cliente: e.target.value }))}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Telefone do Cliente"
-                value={dadosCliente.telefone_cliente}
-                onChange={(e) => setDadosCliente(prev => ({ ...prev, telefone_cliente: e.target.value }))}
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Data do Pedido"
-                type="datetime-local"
-                value={dataPedido}
-                onChange={(e) => setDataPedido(e.target.value)}
-                slotProps={{ inputLabel: { shrink: true } }}
-                required
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControl fullWidth>
-                <InputLabel>Forma de Pagamento</InputLabel>
-                <Select
-                  value={formaPagamento}
-                  label="Forma de Pagamento"
-                  onChange={(e) => setFormaPagamento(e.target.value as FormaPagamento | '')}
-                >
-                  <MenuItem value="">
-                    <Typography variant="body2" color="text.secondary">Não informado</Typography>
-                  </MenuItem>
-                  {todasFormasPagamento.map((forma) => (
-                    <MenuItem key={forma} value={forma} sx={{ textTransform: 'capitalize' }}>
-                      {forma}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
 
             <Grid size={12}>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
-                Entrega
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={teleEntrega}
-                    onChange={(e) => setTeleEntrega(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Tele-entrega"
-              />
-            </Grid>
-            {teleEntrega && (
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Taxa de Entrega (R$)"
-                  type="number"
-                  inputProps={{ min: 0, step: '0.01' }}
-                  value={taxaEntrega}
-                  onChange={(e) => setTaxaEntrega(parseFloat(e.target.value) || 0)}
-                />
-              </Grid>
-            )}
-
-            <Grid size={12}>
-              <Divider sx={{ my: 1 }} />
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
                 Itens do Pedido
               </Typography>
@@ -361,6 +299,178 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
                 </Table>
               </Grid>
             )}
+
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Pagamento
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth>
+                <InputLabel>Forma de Pagamento</InputLabel>
+                <Select
+                  value={formaPagamento}
+                  label="Forma de Pagamento"
+                  onChange={(e) => alterarFormaPagamento(e.target.value as FormaPagamento | '')}
+                >
+                  <MenuItem value="">
+                    <Typography variant="body2" color="text.secondary">Não informado</Typography>
+                  </MenuItem>
+                  {todasFormasPagamento.map((forma) => (
+                    <MenuItem key={forma} value={forma} sx={{ textTransform: 'capitalize' }}>
+                      {forma}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
+            {pagamentoEhDinheiro && (
+              <>
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={precisaDeTroco}
+                        onChange={(e) => {
+                          setPrecisaDeTroco(e.target.checked)
+                          if (!e.target.checked) setValorPagoEmDinheiro('')
+                        }}
+                        color="primary"
+                      />
+                    }
+                    label="Precisa de troco?"
+                  />
+                </Grid>
+                {precisaDeTroco && (
+                  <Grid size={12}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                        {atalhosTroco.map(valor => (
+                          <Chip
+                            key={valor}
+                            label={`R$ ${valor}`}
+                            onClick={() => setValorPagoEmDinheiro(valor)}
+                            variant={valorPagoEmDinheiro === valor ? 'filled' : 'outlined'}
+                            color={valorPagoEmDinheiro === valor ? 'primary' : 'default'}
+                            sx={{ fontWeight: 600 }}
+                          />
+                        ))}
+                      </Box>
+                      <TextField
+                        label="Valor pago"
+                        type="number"
+                        inputProps={{ min: 0, step: '0.01' }}
+                        value={valorPagoEmDinheiro}
+                        onChange={(e) => setValorPagoEmDinheiro(parseFloat(e.target.value) || '')}
+                        slotProps={{
+                          input: {
+                            startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                          },
+                        }}
+                        sx={{ maxWidth: 200 }}
+                        autoFocus
+                      />
+                      {trocoCalculado !== null && (
+                        <Box
+                          sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            px: 2,
+                            py: 1,
+                            borderRadius: '8px',
+                            bgcolor: trocoCalculado >= 0 ? 'success.light' : 'error.light',
+                            color: trocoCalculado >= 0 ? 'success.contrastText' : 'error.contrastText',
+                            alignSelf: 'flex-start',
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={600}>
+                            {trocoCalculado >= 0
+                              ? `Troco: R$ ${trocoCalculado.toFixed(2).replace('.', ',')}`
+                              : `Falta: R$ ${Math.abs(trocoCalculado).toFixed(2).replace('.', ',')}`}
+                          </Typography>
+                        </Box>
+                      )}
+                    </Box>
+                  </Grid>
+                )}
+              </>
+            )}
+
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Data
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Data do Pedido"
+                type="datetime-local"
+                value={dataPedido}
+                onChange={(e) => setDataPedido(e.target.value)}
+                slotProps={{ inputLabel: { shrink: true } }}
+                required
+              />
+            </Grid>
+
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Entrega
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={teleEntrega}
+                    onChange={(e) => setTeleEntrega(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Tele-entrega"
+              />
+            </Grid>
+            {teleEntrega && (
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Taxa de Entrega (R$)"
+                  type="number"
+                  inputProps={{ min: 0, step: '0.01' }}
+                  value={taxaEntrega}
+                  onChange={(e) => setTaxaEntrega(parseFloat(e.target.value) || 0)}
+                />
+              </Grid>
+            )}
+
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Dados do Cliente
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Nome do Cliente"
+                value={dadosCliente.nome_cliente}
+                onChange={(e) => setDadosCliente(prev => ({ ...prev, nome_cliente: e.target.value }))}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Telefone do Cliente"
+                value={dadosCliente.telefone_cliente}
+                onChange={(e) => setDadosCliente(prev => ({ ...prev, telefone_cliente: e.target.value }))}
+              />
+            </Grid>
+
           </Grid>
         </Box>
       </DialogContent>
