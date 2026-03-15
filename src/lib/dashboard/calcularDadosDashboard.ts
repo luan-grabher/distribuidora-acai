@@ -1,5 +1,5 @@
 import type { Pedido } from '@/types/pedido'
-import type { DadosDashboard, FaturamentoDiario, ItemMaisVendido } from '@/types/dashboard'
+import type { DadosDashboard, FaturamentoDiario, ItemMaisVendido, VendaPorFormaPagamento } from '@/types/dashboard'
 
 function obterDiasDoMes(ano: number, mes: number): number {
   return new Date(ano, mes + 1, 0).getDate()
@@ -55,6 +55,23 @@ function calcularItensMaisVendidos(pedidos: Pedido[], diasDecorridos: number, di
     .sort((a, b) => b.quantidade - a.quantidade)
 }
 
+function calcularVendasPorFormaPagamento(pedidos: Pedido[]): VendaPorFormaPagamento[] {
+  const agrupado: Record<string, { quantidade: number; total: number }> = {}
+
+  for (const pedido of pedidos) {
+    const chave = pedido.forma_pagamento ?? 'não informado'
+    if (!agrupado[chave]) {
+      agrupado[chave] = { quantidade: 0, total: 0 }
+    }
+    agrupado[chave].quantidade += 1
+    agrupado[chave].total += pedido.total
+  }
+
+  return Object.entries(agrupado)
+    .map(([formaPagamento, { quantidade, total }]) => ({ formaPagamento, quantidade, total }))
+    .sort((a, b) => b.quantidade - a.quantidade)
+}
+
 export function calcularDadosDashboard(pedidos: Pedido[]): DadosDashboard {
   const agora = new Date()
   const diasNoMes = obterDiasDoMes(agora.getFullYear(), agora.getMonth())
@@ -74,5 +91,6 @@ export function calcularDadosDashboard(pedidos: Pedido[]): DadosDashboard {
     diasNoMes,
     faturamentoPorDia: calcularFaturamentoPorDia(pedidos, diasDecorridos),
     itensMaisVendidos: calcularItensMaisVendidos(pedidos, diasDecorridos, diasNoMes),
+    vendasPorFormaPagamento: calcularVendasPorFormaPagamento(pedidos),
   }
 }
