@@ -29,7 +29,7 @@ import Chip from '@mui/material/Chip'
 import InputAdornment from '@mui/material/InputAdornment'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
-import type { NovoPedido, ItemPedido, FormaPagamento } from '@/types/pedido'
+import type { NovoPedido, ItemPedido, FormaPagamento, Pedido } from '@/types/pedido'
 import { todasFormasPagamento, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
 import type { Item } from '@/types/item'
 
@@ -37,6 +37,7 @@ type PropsFormularioPedido = {
   aberto: boolean
   onFechar: () => void
   onSalvar: (dados: NovoPedido) => Promise<void>
+  pedidoParaEditar?: Pedido
 }
 
 const dadosClienteIniciais = { nome_cliente: '', telefone_cliente: '' }
@@ -46,7 +47,13 @@ const obterDataAtualParaCampoDatetime = () => {
   return agora.toISOString().slice(0, 16)
 }
 
-export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFormularioPedido) {
+const isoParaInputDatetime = (isoString: string): string => {
+  const date = new Date(isoString)
+  const timezoneOffset = date.getTimezoneOffset() * 60000
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
+}
+
+export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoParaEditar }: PropsFormularioPedido) {
   const [dadosCliente, setDadosCliente] = useState(dadosClienteIniciais)
   const [dataPedido, setDataPedido] = useState(obterDataAtualParaCampoDatetime)
   const [formaPagamento, setFormaPagamento] = useState<FormaPagamento | ''>('')
@@ -79,12 +86,22 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
 
   useEffect(() => {
     if (aberto) {
-      setDadosCliente(dadosClienteIniciais)
-      setDataPedido(obterDataAtualParaCampoDatetime())
-      setFormaPagamento('')
-      setItensDoPedido([])
-      setTeleEntrega(false)
-      setTaxaEntrega(TAXA_ENTREGA_PADRAO)
+      if (pedidoParaEditar) {
+        setDadosCliente({ nome_cliente: pedidoParaEditar.nome_cliente, telefone_cliente: pedidoParaEditar.telefone_cliente })
+        setDataPedido(isoParaInputDatetime(pedidoParaEditar.criado_em))
+        setFormaPagamento(pedidoParaEditar.forma_pagamento ?? '')
+        setItensDoPedido(pedidoParaEditar.itens)
+        const temEntrega = pedidoParaEditar.taxa_entrega > 0
+        setTeleEntrega(temEntrega)
+        setTaxaEntrega(temEntrega ? pedidoParaEditar.taxa_entrega : TAXA_ENTREGA_PADRAO)
+      } else {
+        setDadosCliente(dadosClienteIniciais)
+        setDataPedido(obterDataAtualParaCampoDatetime())
+        setFormaPagamento('')
+        setItensDoPedido([])
+        setTeleEntrega(false)
+        setTaxaEntrega(TAXA_ENTREGA_PADRAO)
+      }
       setPrecisaDeTroco(false)
       setValorPagoEmDinheiro('')
       setItemSelecionadoId('')
@@ -93,7 +110,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
       setErro(null)
       buscarItensCatalogo()
     }
-  }, [aberto, buscarItensCatalogo])
+  }, [aberto, pedidoParaEditar, buscarItensCatalogo])
 
   const totalDoPedido = itensDoPedido.reduce((soma, item) => soma + item.subtotal, 0)
   const taxaEntregaFinal = teleEntrega ? taxaEntrega : 0
@@ -168,7 +185,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
       })
       onFechar()
     } catch {
-      setErro('Erro ao criar pedido. Tente novamente.')
+      setErro('Erro ao salvar pedido. Tente novamente.')
     } finally {
       setSalvando(false)
     }
@@ -176,7 +193,16 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
 
   return (
     <Dialog open={aberto} onClose={onFechar} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
-      <DialogTitle fontWeight={700}>Novo Pedido</DialogTitle>
+      <DialogTitle fontWeight={700}>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
+          {pedidoParaEditar ? 'Editar Pedido' : 'Novo Pedido'}
+          {pedidoParaEditar && (
+            <Typography component="span" variant="body2" color="text.secondary" fontWeight={400}>
+              #{pedidoParaEditar.id}
+            </Typography>
+          )}
+        </Box>
+      </DialogTitle>
       <DialogContent>
         {erro && <Alert severity="error" sx={{ mb: 2 }}>{erro}</Alert>}
         <Box component="form" id="formulario-pedido" onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -485,7 +511,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar }: PropsFo
           disabled={salvando || itensDoPedido.length === 0}
           sx={{ borderRadius: '50px', px: 4 }}
         >
-          {salvando ? <CircularProgress size={20} color="inherit" /> : 'Criar Pedido'}
+          {salvando ? <CircularProgress size={20} color="inherit" /> : (pedidoParaEditar ? 'Salvar Alterações' : 'Criar Pedido')}
         </Button>
       </DialogActions>
     </Dialog>
