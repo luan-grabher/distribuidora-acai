@@ -139,7 +139,7 @@ export const siteConfig = {
         cep: "91180-001",
         geoLatitude: -30.0121,
         geoLongitude: -51.0967,
-        googleMapsEmbedUrl: "https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d431.85781065266553!2d-51.096723275873835!3d-30.012104738999273!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1spt-BR!2sbr!4v1772025489334!5m2!1spt-BR!2sbr",
+        googleMapsEmbedUrl: "https://www.google.com/maps?q=-30.0122,-51.0966&z=17&output=embed&z=17",
     },
     footer: {
         copyright: "© 2024 Miquinho Distribuidora. Todos os direitos reservados.",
