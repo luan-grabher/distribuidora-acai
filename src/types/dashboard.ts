@@ -11,6 +11,12 @@ export type ItemMaisVendido = {
   projecaoTotalFaturado: number
 }
 
+export type VendaPorFormaPagamento = {
+  formaPagamento: string
+  quantidade: number
+  total: number
+}
+
 export type DadosDashboard = {
   totalFaturadoNoMes: number
   mediaFaturamentoPorDia: number
@@ -20,4 +26,5 @@ export type DadosDashboard = {
   diasNoMes: number
   faturamentoPorDia: FaturamentoDiario[]
   itensMaisVendidos: ItemMaisVendido[]
+  vendasPorFormaPagamento: VendaPorFormaPagamento[]
 }

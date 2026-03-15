@@ -11,6 +11,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp'
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import { useDashboardAdmin } from '@/hooks/useDashboardAdmin'
 import CartaoMetricaDashboard from './CartaoMetricaDashboard'
+import CartaoVendasPorFormaPagamento from './CartaoVendasPorFormaPagamento'
 import GraficoFaturamentoDiario from './GraficoFaturamentoDiario'
 import GraficoItensMaisVendidos from './GraficoItensMaisVendidos'
 import ProjecaoItensMes from './ProjecaoItensMes'
@@ -91,6 +92,9 @@ export default function InicioDashboard() {
             corDestaque="#1565C0"
             Icone={CalendarTodayIcon}
           />
+        </Grid>
+        <Grid size={{ xs: 12 }}>
+          <CartaoVendasPorFormaPagamento vendasPorFormaPagamento={dados.vendasPorFormaPagamento} />
         </Grid>
       </Grid>
 
