@@ -26,29 +26,31 @@ function calcularFaturamentoPorDia(pedidos: Pedido[], diasDecorridos: number): F
 }
 
 function calcularItensMaisVendidos(pedidos: Pedido[], diasDecorridos: number, diasNoMes: number): ItemMaisVendido[] {
-  const quantidadePorItem: Record<string, number> = {}
-  const totalFaturadoPorItem: Record<string, number> = {}
+  const quantidadePorId: Record<string, number> = {}
+  const totalFaturadoPorId: Record<string, number> = {}
+  const nomePorId: Record<string, string> = {}
 
   for (const pedido of pedidos) {
     for (const item of pedido.itens) {
-      if (!quantidadePorItem[item.nome]) {
-        quantidadePorItem[item.nome] = 0
-        totalFaturadoPorItem[item.nome] = 0
+      if (!quantidadePorId[item.id]) {
+        quantidadePorId[item.id] = 0
+        totalFaturadoPorId[item.id] = 0
       }
-      quantidadePorItem[item.nome] += item.quantidade
-      totalFaturadoPorItem[item.nome] += item.subtotal
+      quantidadePorId[item.id] += item.quantidade
+      totalFaturadoPorId[item.id] += item.subtotal
+      nomePorId[item.id] = item.nome
     }
   }
 
   const fatorProjecao = diasDecorridos > 0 ? diasNoMes / diasDecorridos : 1
 
-  return Object.keys(quantidadePorItem)
-    .map((nome) => ({
-      nome,
-      quantidade: quantidadePorItem[nome],
-      totalFaturado: totalFaturadoPorItem[nome],
-      projecaoQuantidade: Math.round(quantidadePorItem[nome] * fatorProjecao),
-      projecaoTotalFaturado: totalFaturadoPorItem[nome] * fatorProjecao,
+  return Object.keys(quantidadePorId)
+    .map((id) => ({
+      nome: nomePorId[id],
+      quantidade: quantidadePorId[id],
+      totalFaturado: totalFaturadoPorId[id],
+      projecaoQuantidade: Math.round(quantidadePorId[id] * fatorProjecao),
+      projecaoTotalFaturado: totalFaturadoPorId[id] * fatorProjecao,
     }))
     .sort((a, b) => b.quantidade - a.quantidade)
 }
