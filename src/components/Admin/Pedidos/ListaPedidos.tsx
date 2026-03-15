@@ -55,12 +55,41 @@ type PropsLinhaExpandivel = {
   onRemover: (id: string) => Promise<void>
 }
 
+const isoParaInputDatetime = (isoString: string): string => {
+  const date = new Date(isoString)
+  const timezoneOffset = date.getTimezoneOffset() * 60000
+  return new Date(date.getTime() - timezoneOffset).toISOString().slice(0, 16)
+}
+
 function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandivel) {
   const [expandido, setExpandido] = useState(false)
   const [atualizando, setAtualizando] = useState(false)
   const [editandoPrecos, setEditandoPrecos] = useState(false)
   const [itensPedidoEditaveis, setItensPedidoEditaveis] = useState<ItemPedido[]>(pedido.itens)
   const [confirmacaoExclusaoAberta, setConfirmacaoExclusaoAberta] = useState(false)
+  const [editandoData, setEditandoData] = useState(false)
+  const [dataEditavel, setDataEditavel] = useState(isoParaInputDatetime(pedido.criado_em))
+
+  const iniciarEdicaoData = () => {
+    setDataEditavel(isoParaInputDatetime(pedido.criado_em))
+    setEditandoData(true)
+  }
+
+  const cancelarEdicaoData = () => {
+    setDataEditavel(isoParaInputDatetime(pedido.criado_em))
+    setEditandoData(false)
+  }
+
+  const salvarEdicaoData = async () => {
+    if (!dataEditavel) return
+    setAtualizando(true)
+    try {
+      await onAtualizar(pedido.id, { criado_em: new Date(dataEditavel).toISOString() })
+      setEditandoData(false)
+    } finally {
+      setAtualizando(false)
+    }
+  }
 
   const handleStatus = async (novoStatus: StatusPedido) => {
     setAtualizando(true)
@@ -144,7 +173,33 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover }: PropsLinhaExpandive
             {pedido.id.slice(0, 8)}...
           </Typography>
         </TableCell>
-        <TableCell>{dataFormatada}</TableCell>
+        <TableCell>
+          {editandoData ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <TextField
+                size="small"
+                type="datetime-local"
+                value={dataEditavel}
+                onChange={(e) => setDataEditavel(e.target.value)}
+                disabled={atualizando}
+                sx={{ width: '195px' }}
+              />
+              <IconButton size="small" color="primary" onClick={salvarEdicaoData} disabled={atualizando || !dataEditavel}>
+                {atualizando ? <CircularProgress size={16} color="inherit" /> : <SaveIcon fontSize="small" />}
+              </IconButton>
+              <IconButton size="small" onClick={cancelarEdicaoData} disabled={atualizando}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Typography variant="body2">{dataFormatada}</Typography>
+              <IconButton size="small" onClick={iniciarEdicaoData} disabled={atualizando} sx={{ opacity: 0.4, '&:hover': { opacity: 1 } }}>
+                <EditIcon sx={{ fontSize: '0.9rem' }} />
+              </IconButton>
+            </Box>
+          )}
+        </TableCell>
         <TableCell>
           <Typography variant="body2" fontWeight={600}>{pedido.nome_cliente}</Typography>
           <Typography variant="caption" color="text.secondary">{pedido.telefone_cliente}</Typography>
