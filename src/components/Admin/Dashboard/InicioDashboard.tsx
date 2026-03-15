@@ -46,7 +46,7 @@ export default function InicioDashboard() {
 
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ mb: 4, mt: 4}}>
         <Typography variant="h5" fontWeight={700} color="text.primary">
           Dashboard
         </Typography>
