@@ -60,6 +60,9 @@ export type EdicaoPedido = {
   total?: number
   forma_pagamento?: FormaPagamento | null
   taxa_entrega?: number
+  criado_em?: string
+  nome_cliente?: string
+  telefone_cliente?: string
 }
 
 export const TAXA_ENTREGA_PADRAO = 7
