@@ -32,6 +32,7 @@ const valoresIniciais: NovoItem = {
   preco: 0,
   estoque: 0,
   ativo: true,
+  codigo_barras: null,
 }
 
 export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar }: PropsFormularioItem) {
@@ -52,6 +53,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
       preco: itemEdicao.preco,
       estoque: itemEdicao.estoque,
       ativo: itemEdicao.ativo,
+      codigo_barras: itemEdicao.codigo_barras ?? null,
     } : valoresIniciais)
     setErro(null)
     if (itemEdicao && itemEdicao.imagem_url) {
@@ -118,7 +120,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
     }
   }
 
-  const handleChange = (campo: keyof NovoItem, valor: string | number | boolean) => {
+  const handleChange = (campo: keyof NovoItem, valor: string | number | boolean | null) => {
     setDados((anterior) => ({ ...anterior, [campo]: valor }))
   }
 
@@ -248,6 +250,15 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 value={dados.estoque}
                 onChange={(e) => handleChange('estoque', parseInt(e.target.value) || 0)}
                 required
+              />
+            </Grid>
+            <Grid size={12}>
+              <TextField
+                fullWidth
+                label="Código de Barras"
+                value={dados.codigo_barras ?? ''}
+                onChange={(e) => handleChange('codigo_barras', e.target.value || null)}
+                placeholder="Ex: 7891234567890"
               />
             </Grid>
             <Grid size={12}>
