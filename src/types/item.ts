@@ -7,6 +7,7 @@ export type Item = {
   estoque: number
   ativo: boolean
   criado_em: string
+  codigo_barras: string | null
 }
 
 export type NovoItem = Omit<Item, 'id' | 'criado_em'>

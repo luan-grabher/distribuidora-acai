@@ -29,6 +29,7 @@ import Chip from '@mui/material/Chip'
 import InputAdornment from '@mui/material/InputAdornment'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
+import BarcodeReaderIcon from '@mui/icons-material/BarcodeReader'
 import type { NovoPedido, ItemPedido, FormaPagamento, Pedido } from '@/types/pedido'
 import { todasFormasPagamento, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
 import type { Item } from '@/types/item'
@@ -39,6 +40,9 @@ type PropsFormularioPedido = {
   onSalvar: (dados: NovoPedido) => Promise<void>
   pedidoParaEditar?: Pedido
 }
+
+const INTERVALO_MAXIMO_ENTRE_CARACTERES_DO_LEITOR_MS = 50
+const COMPRIMENTO_MINIMO_CODIGO_DE_BARRAS = 4
 
 const dadosClienteIniciais = { nome_cliente: '', telefone_cliente: '' }
 const obterDataAtualParaCampoDatetime = () => {
@@ -75,6 +79,14 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   const timerResetSessaoDigitacaoRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const emSessaoDigitacaoQuantidadeRef = useRef(false)
   const precisaFocarSelectProdutoAposCarregamentoRef = useRef(false)
+
+  const barcodeBufferRef = useRef<string>('')
+  const barcodeStampsRef = useRef<number[]>([])
+  const barcodeTimerLimparRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const itemIdEmSessaoEdicaoTabelaRef = useRef<string | null>(null)
+  const emSessaoEdicaoQuantidadeTabelaRef = useRef(false)
+  const timerSessaoEdicaoQuantidadeTabelaRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const buscarItensCatalogo = useCallback(async () => {
     setCarregandoItens(true)
@@ -138,6 +150,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   useEffect(() => {
     return () => {
       if (timerResetSessaoDigitacaoRef.current) clearTimeout(timerResetSessaoDigitacaoRef.current)
+      if (timerSessaoEdicaoQuantidadeTabelaRef.current) clearTimeout(timerSessaoEdicaoQuantidadeTabelaRef.current)
     }
   }, [])
 
@@ -225,6 +238,108 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
     setItensDoPedido(anterior => anterior.filter(item => item.id !== id))
   }
 
+  const adicionarItemPorCodigoDeBarras = useCallback((itemCatalogo: Item) => {
+    setItensDoPedido(anterior => {
+      const indiceExistente = anterior.findIndex(i => i.id === itemCatalogo.id)
+      if (indiceExistente >= 0) {
+        return anterior.map((item, index) => {
+          if (index !== indiceExistente) return item
+          const novaQuantidade = item.quantidade + 1
+          return { ...item, quantidade: novaQuantidade, subtotal: item.preco * novaQuantidade }
+        })
+      }
+      const novoItem: ItemPedido = {
+        id: itemCatalogo.id,
+        nome: itemCatalogo.nome,
+        preco: itemCatalogo.preco,
+        quantidade: 1,
+        subtotal: itemCatalogo.preco,
+      }
+      return [...anterior, novoItem]
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!aberto) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        const buffer = barcodeBufferRef.current
+        const stamps = barcodeStampsRef.current
+
+        if (buffer.length >= COMPRIMENTO_MINIMO_CODIGO_DE_BARRAS && stamps.length > 1) {
+          const todosCaracteresForamDigitadosRapido = stamps.every((stamp, i) =>
+            i === 0 || stamp - stamps[i - 1] <= INTERVALO_MAXIMO_ENTRE_CARACTERES_DO_LEITOR_MS
+          )
+
+          if (todosCaracteresForamDigitadosRapido) {
+            const itemEncontrado = itensCatalogo.find(i => i.codigo_barras === buffer)
+            if (itemEncontrado) {
+              adicionarItemPorCodigoDeBarras(itemEncontrado)
+              e.preventDefault()
+            }
+          }
+        }
+
+        barcodeBufferRef.current = ''
+        barcodeStampsRef.current = []
+        return
+      }
+
+      if (e.key.length === 1 && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        const agora = Date.now()
+        barcodeBufferRef.current += e.key
+        barcodeStampsRef.current.push(agora)
+
+        if (barcodeTimerLimparRef.current) clearTimeout(barcodeTimerLimparRef.current)
+        barcodeTimerLimparRef.current = setTimeout(() => {
+          barcodeBufferRef.current = ''
+          barcodeStampsRef.current = []
+        }, 300)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      if (barcodeTimerLimparRef.current) clearTimeout(barcodeTimerLimparRef.current)
+    }
+  }, [aberto, itensCatalogo, adicionarItemPorCodigoDeBarras])
+
+  const alterarQuantidadeItemNaTabela = (itemId: string, novaQuantidade: number) => {
+    setItensDoPedido(anterior => anterior.map(item => {
+      if (item.id !== itemId) return item
+      const quantidade = Math.max(1, Math.min(999, novaQuantidade))
+      return { ...item, quantidade, subtotal: item.preco * quantidade }
+    }))
+  }
+
+  const reiniciarSessaoEdicaoQuantidadeTabela = () => {
+    emSessaoEdicaoQuantidadeTabelaRef.current = false
+    itemIdEmSessaoEdicaoTabelaRef.current = null
+  }
+
+  const handleKeyDownQuantidadeItemTabela = (e: React.KeyboardEvent, itemId: string) => {
+    if (!/^\d$/.test(e.key)) return
+    e.preventDefault()
+    const digito = parseInt(e.key)
+    const emSessaoDoMesmoItem = emSessaoEdicaoQuantidadeTabelaRef.current && itemIdEmSessaoEdicaoTabelaRef.current === itemId
+
+    setItensDoPedido(anterior => anterior.map(item => {
+      if (item.id !== itemId) return item
+      const quantidade = emSessaoDoMesmoItem
+        ? Math.min(999, item.quantidade * 10 + digito)
+        : Math.max(1, digito)
+      return { ...item, quantidade, subtotal: item.preco * quantidade }
+    }))
+
+    itemIdEmSessaoEdicaoTabelaRef.current = itemId
+    emSessaoEdicaoQuantidadeTabelaRef.current = true
+
+    if (timerSessaoEdicaoQuantidadeTabelaRef.current) clearTimeout(timerSessaoEdicaoQuantidadeTabelaRef.current)
+    timerSessaoEdicaoQuantidadeTabelaRef.current = setTimeout(reiniciarSessaoEdicaoQuantidadeTabela, 1000)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (itensDoPedido.length === 0) {
@@ -271,6 +386,22 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
                 Itens do Pedido
               </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <BarcodeReaderIcon
+                  fontSize="small"
+                  color="action"
+                  sx={{
+                    '@keyframes piscar': {
+                      '0%, 100%': { opacity: 1 },
+                      '50%': { opacity: 0.2 },
+                    },
+                    animation: 'piscar 1.4s ease-in-out infinite',
+                  }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  Aguardando leitura de código de barras...
+                </Typography>
+              </Box>
             </Grid>
 
             {carregandoItens ? (
@@ -363,7 +494,20 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                       <TableRow key={item.id}>
                         <TableCell>{item.nome}</TableCell>
                         <TableCell align="right">R$ {item.preco.toFixed(2).replace('.', ',')}</TableCell>
-                        <TableCell align="right">{item.quantidade}</TableCell>
+                        <TableCell align="right" sx={{ py: 0.5 }}>
+                          <TextField
+                            size="small"
+                            type="number"
+                            inputProps={{ min: 1 }}
+                            value={item.quantidade}
+                            onChange={(e) => {
+                              alterarQuantidadeItemNaTabela(item.id, parseInt(e.target.value) || 1)
+                              reiniciarSessaoEdicaoQuantidadeTabela()
+                            }}
+                            onKeyDown={(e) => handleKeyDownQuantidadeItemTabela(e, item.id)}
+                            sx={{ width: '72px', '& .MuiInputBase-root': { borderRadius: '6px' } }}
+                          />
+                        </TableCell>
                         <TableCell align="right">R$ {item.subtotal.toFixed(2).replace('.', ',')}</TableCell>
                         <TableCell>
                           <IconButton size="small" onClick={() => removerItemDoPedido(item.id)} color="error">
