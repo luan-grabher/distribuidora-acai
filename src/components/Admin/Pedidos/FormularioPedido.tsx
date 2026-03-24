@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import Box from '@mui/material/Box'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
@@ -70,6 +70,12 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   const [carregandoItens, setCarregandoItens] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
+  const refContainerSelectProduto = useRef<HTMLDivElement>(null)
+  const refInputQuantidade = useRef<HTMLInputElement>(null)
+  const timerResetSessaoDigitacaoRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const emSessaoDigitacaoQuantidadeRef = useRef(false)
+  const precisaFocarSelectProdutoAposCarregamentoRef = useRef(false)
+
   const buscarItensCatalogo = useCallback(async () => {
     setCarregandoItens(true)
     try {
@@ -84,8 +90,18 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
     }
   }, [])
 
+  const focarSelectProduto = useCallback(() => {
+    refContainerSelectProduto.current?.querySelector<HTMLElement>('[tabindex="0"]')?.focus()
+  }, [])
+
+  const reiniciarSessaoDigitacaoQuantidade = useCallback(() => {
+    emSessaoDigitacaoQuantidadeRef.current = false
+    if (timerResetSessaoDigitacaoRef.current) clearTimeout(timerResetSessaoDigitacaoRef.current)
+  }, [])
+
   useEffect(() => {
     if (aberto) {
+      precisaFocarSelectProdutoAposCarregamentoRef.current = true
       if (pedidoParaEditar) {
         setDadosCliente({ nome_cliente: pedidoParaEditar.nome_cliente, telefone_cliente: pedidoParaEditar.telefone_cliente })
         setDataPedido(isoParaInputDatetime(pedidoParaEditar.criado_em))
@@ -111,6 +127,19 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       buscarItensCatalogo()
     }
   }, [aberto, pedidoParaEditar, buscarItensCatalogo])
+
+  useEffect(() => {
+    if (!carregandoItens && aberto && precisaFocarSelectProdutoAposCarregamentoRef.current) {
+      precisaFocarSelectProdutoAposCarregamentoRef.current = false
+      requestAnimationFrame(() => focarSelectProduto())
+    }
+  }, [carregandoItens, aberto, focarSelectProduto])
+
+  useEffect(() => {
+    return () => {
+      if (timerResetSessaoDigitacaoRef.current) clearTimeout(timerResetSessaoDigitacaoRef.current)
+    }
+  }, [])
 
   const totalDoPedido = itensDoPedido.reduce((soma, item) => soma + item.subtotal, 0)
   const taxaEntregaFinal = teleEntrega ? taxaEntrega : 0
@@ -160,6 +189,36 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
     setItemSelecionadoId('')
     setPrecoItemSelecionado('')
     setQuantidadeItemSelecionado(1)
+    reiniciarSessaoDigitacaoQuantidade()
+    requestAnimationFrame(() => focarSelectProduto())
+  }
+
+  const handleKeyDownQuantidade = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (itemSelecionadoId) adicionarItemAoPedido()
+      return
+    }
+
+    if (/^\d$/.test(e.key)) {
+      e.preventDefault()
+      const digitoDigitado = parseInt(e.key)
+
+      if (!emSessaoDigitacaoQuantidadeRef.current) {
+        setQuantidadeItemSelecionado(digitoDigitado)
+        emSessaoDigitacaoQuantidadeRef.current = true
+      } else {
+        setQuantidadeItemSelecionado(anterior => {
+          const novoValor = anterior * 10 + digitoDigitado
+          return novoValor > 999 ? anterior : novoValor
+        })
+      }
+
+      if (timerResetSessaoDigitacaoRef.current) clearTimeout(timerResetSessaoDigitacaoRef.current)
+      timerResetSessaoDigitacaoRef.current = setTimeout(() => {
+        emSessaoDigitacaoQuantidadeRef.current = false
+      }, 1000)
+    }
   }
 
   const removerItemDoPedido = (id: string) => {
@@ -223,25 +282,31 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
             ) : (
               <>
                 <Grid size={{ xs: 12, sm: 5 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Produto</InputLabel>
-                    <Select
-                      value={itemSelecionadoId}
-                      label="Produto"
-                      onChange={(e) => {
-                        const id = e.target.value
-                        setItemSelecionadoId(id)
-                        const itemCatalogo = itensCatalogo.find(i => i.id === id)
-                        setPrecoItemSelecionado(itemCatalogo ? itemCatalogo.preco : '')
-                      }}
-                    >
-                      {itensCatalogo.map(item => (
-                        <MenuItem key={item.id} value={item.id}>
-                          {item.nome} — R$ {item.preco.toFixed(2).replace('.', ',')}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                  <Box ref={refContainerSelectProduto}>
+                    <FormControl fullWidth>
+                      <InputLabel>Produto</InputLabel>
+                      <Select
+                        value={itemSelecionadoId}
+                        label="Produto"
+                        onChange={(e) => {
+                          const id = e.target.value
+                          setItemSelecionadoId(id)
+                          const itemCatalogo = itensCatalogo.find(i => i.id === id)
+                          setPrecoItemSelecionado(itemCatalogo ? itemCatalogo.preco : '')
+                          if (id) {
+                            reiniciarSessaoDigitacaoQuantidade()
+                            requestAnimationFrame(() => refInputQuantidade.current?.focus())
+                          }
+                        }}
+                      >
+                        {itensCatalogo.map(item => (
+                          <MenuItem key={item.id} value={item.id}>
+                            {item.nome} — R$ {item.preco.toFixed(2).replace('.', ',')}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 3 }}>
                   <TextField
@@ -262,6 +327,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                     inputProps={{ min: 1 }}
                     value={quantidadeItemSelecionado}
                     onChange={(e) => setQuantidadeItemSelecionado(parseInt(e.target.value) || 1)}
+                    inputRef={refInputQuantidade}
+                    onKeyDown={handleKeyDownQuantidade}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 2 }}>
