@@ -93,6 +93,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           value={abaAtiva === -1 ? 0 : abaAtiva}
           onChange={(_, novoIndice) => router.push(paginasAdmin[novoIndice].href)}
           textColor="inherit"
+          variant="scrollable"
+          scrollButtons="auto"
           TabIndicatorProps={{ style: { backgroundColor: '#F9C715' } }}
           sx={{ px: 2 }}
         >
