@@ -16,6 +16,7 @@ import FullscreenExitIcon from '@mui/icons-material/FullscreenExit'
 import HomeIcon from '@mui/icons-material/Home'
 import InventoryIcon from '@mui/icons-material/Inventory'
 import ShoppingBagIcon from '@mui/icons-material/ShoppingBag'
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import { useLogin } from '@/hooks/useLogin'
 import { siteConfig } from '@/config/siteConfig'
 import { usePathname, useRouter } from 'next/navigation'
@@ -25,6 +26,7 @@ const paginasAdmin = [
   { label: 'Início', href: '/admin/dashboard', exato: true, icon: <HomeIcon /> },
   { label: 'Itens do Catálogo', href: '/admin/dashboard/itens', exato: false, icon: <InventoryIcon /> },
   { label: 'Pedidos', href: '/admin/dashboard/pedidos', exato: false, icon: <ShoppingBagIcon /> },
+  { label: 'Financeiro', href: '/admin/dashboard/financeiro', exato: false, icon: <AttachMoneyIcon /> },
 ]
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
