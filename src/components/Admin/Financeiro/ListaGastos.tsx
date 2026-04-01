@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Box from '@mui/material/Box'
+import TextField from '@mui/material/TextField'
 import Grid from '@mui/material/Grid'
 import Table from '@mui/material/Table'
 import TableBody from '@mui/material/TableBody'
@@ -37,27 +38,23 @@ function formatarReais(valor: number): string {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-function calcularParcelaAtual(dataInicio: string): number {
-  const inicio = new Date(dataInicio + 'T00:00:00')
-  const agora = new Date()
-  const mesesDecorridos =
-    (agora.getFullYear() - inicio.getFullYear()) * 12 +
-    (agora.getMonth() - inicio.getMonth())
+function calcularParcelaAtual(dataInicio: string, targetYear: number, targetMonthZeroBased: number): number {
+  const inicio = new Date(dataInicio)
+  const mesesDecorridos = (targetYear - inicio.getFullYear()) * 12 + (targetMonthZeroBased - inicio.getMonth())
   return Math.max(1, mesesDecorridos + 1)
 }
 
-function gastoEstaAtivoNestesMes(gasto: Gasto): boolean {
-  const agora = new Date()
-  const inicio = new Date(gasto.data_inicio + 'T00:00:00')
+function gastoEstaAtivoNoMes(gasto: Gasto, targetYear: number, targetMonthZeroBased: number): boolean {
+  const inicio = new Date(gasto.data_inicio)
   const mesInicioAbsoluto = inicio.getFullYear() * 12 + inicio.getMonth()
-  const mesAtualAbsoluto = agora.getFullYear() * 12 + agora.getMonth()
+  const mesAlvoAbsoluto = targetYear * 12 + targetMonthZeroBased
 
-  if (mesAtualAbsoluto < mesInicioAbsoluto) return false
+  if (mesAlvoAbsoluto < mesInicioAbsoluto) return false
 
-  if (gasto.tipo === 'unico') return mesInicioAbsoluto === mesAtualAbsoluto
+  if (gasto.tipo === 'unico') return mesInicioAbsoluto === mesAlvoAbsoluto
 
   if (gasto.tipo === 'parcelado') {
-    const parcelaAtual = mesAtualAbsoluto - mesInicioAbsoluto + 1
+    const parcelaAtual = mesAlvoAbsoluto - mesInicioAbsoluto + 1
     return parcelaAtual <= (gasto.total_parcelas ?? 0)
   }
 
@@ -89,6 +86,10 @@ export default function ListaGastos() {
   const [gastoEdicao, setGastoEdicao] = useState<Gasto | null>(null)
   const [idParaExcluir, setIdParaExcluir] = useState<string | null>(null)
   const [filtroAtivo, setFiltroAtivo] = useState<TipoGasto | 'todos'>('todos')
+  const [mesSelecionado, setMesSelecionado] = useState(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+  })
 
   const abrirNovoGasto = () => {
     setGastoEdicao(null)
@@ -114,20 +115,23 @@ export default function ListaGastos() {
     setIdParaExcluir(null)
   }
 
-  const totalRecorrenteMensal = useMemo(
-    () => gastos.filter((g) => g.tipo === 'recorrente' && gastoEstaAtivoNestesMes(g)).reduce((soma, g) => soma + g.valor, 0),
-    [gastos]
-  )
+  const totalRecorrenteMensal = useMemo(() => {
+    const [y, m] = mesSelecionado.split('-').map(Number)
+    const mz = m - 1
+    return gastos.filter((g) => g.tipo === 'recorrente' && gastoEstaAtivoNoMes(g, y, mz)).reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, mesSelecionado])
 
-  const totalParceladoMensal = useMemo(
-    () => gastos.filter((g) => g.tipo === 'parcelado' && gastoEstaAtivoNestesMes(g)).reduce((soma, g) => soma + g.valor, 0),
-    [gastos]
-  )
+  const totalParceladoMensal = useMemo(() => {
+    const [y, m] = mesSelecionado.split('-').map(Number)
+    const mz = m - 1
+    return gastos.filter((g) => g.tipo === 'parcelado' && gastoEstaAtivoNoMes(g, y, mz)).reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, mesSelecionado])
 
-  const totalUnicoMensal = useMemo(
-    () => gastos.filter((g) => g.tipo === 'unico' && gastoEstaAtivoNestesMes(g)).reduce((soma, g) => soma + g.valor, 0),
-    [gastos]
-  )
+  const totalUnicoMensal = useMemo(() => {
+    const [y, m] = mesSelecionado.split('-').map(Number)
+    const mz = m - 1
+    return gastos.filter((g) => g.tipo === 'unico' && gastoEstaAtivoNoMes(g, y, mz)).reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, mesSelecionado])
 
   const totalMesAtual = totalRecorrenteMensal + totalParceladoMensal + totalUnicoMensal
 
@@ -208,6 +212,17 @@ export default function ListaGastos() {
         ))}
       </Box>
 
+      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <TextField
+          label="Mês"
+          type="month"
+          value={mesSelecionado}
+          onChange={(e) => setMesSelecionado(e.target.value)}
+          size="small"
+          sx={{ width: 180 }}
+        />
+      </Box>
+
       <TableContainer component={Paper} sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         <Table>
           <TableHead>
@@ -216,7 +231,7 @@ export default function ListaGastos() {
               <TableCell>Categoria</TableCell>
               <TableCell>Tipo</TableCell>
               <TableCell>Valor</TableCell>
-              <TableCell>Início</TableCell>
+              <TableCell>Data</TableCell>
               <TableCell>Parcelas</TableCell>
               <TableCell>Status</TableCell>
               <TableCell align="right">Ações</TableCell>
@@ -224,8 +239,10 @@ export default function ListaGastos() {
           </TableHead>
           <TableBody>
             {gastosFiltrados.map((gasto) => {
-              const parcelaAtual = gasto.tipo === 'parcelado' ? calcularParcelaAtual(gasto.data_inicio) : null
-              const ativoNestesMes = gastoEstaAtivoNestesMes(gasto)
+              const [y, m] = mesSelecionado.split('-').map(Number)
+              const mz = m - 1
+              const parcelaAtual = gasto.tipo === 'parcelado' ? calcularParcelaAtual(gasto.data_inicio, y, mz) : null
+              const ativoNestesMes = gastoEstaAtivoNoMes(gasto, y, mz)
               return (
                 <TableRow key={gasto.id} hover>
                   <TableCell>
@@ -248,7 +265,7 @@ export default function ListaGastos() {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">
-                      {new Date(gasto.data_inicio + 'T00:00:00').toLocaleDateString('pt-BR')}
+                      {new Date(gasto.data_inicio).toLocaleDateString('pt-BR')}
                     </Typography>
                   </TableCell>
                   <TableCell>
