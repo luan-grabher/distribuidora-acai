@@ -30,7 +30,7 @@ const valoresIniciais: NovoGasto = {
   categoria: '',
   data_inicio: new Date().toISOString().slice(0, 10),
   total_parcelas: null,
-  ativo: true,
+  status: 'pendente',
 }
 
 const labelsTipo: Record<TipoGasto, string> = {
@@ -53,7 +53,8 @@ export default function FormularioGasto({ aberto, onFechar, gastoEdicao, onSalva
         categoria: gastoEdicao.categoria ?? '',
         data_inicio: gastoEdicao.data_inicio,
         total_parcelas: gastoEdicao.total_parcelas ?? null,
-        ativo: gastoEdicao.ativo,
+        numero_parcela: gastoEdicao.numero_parcela ?? null,
+        status: gastoEdicao.status,
       })
     } else {
       setDados(valoresIniciais)
@@ -163,16 +164,7 @@ export default function FormularioGasto({ aberto, onFechar, gastoEdicao, onSalva
               </Grid>
             )}
             <Grid size={12}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={dados.ativo}
-                    onChange={(e) => handleChange('ativo', e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Gasto ativo"
-              />
+              {/* Status gerenciado pelo banco; usuário verá/alterará status ao marcar como pago via edição */}
             </Grid>
           </Grid>
         </Box>

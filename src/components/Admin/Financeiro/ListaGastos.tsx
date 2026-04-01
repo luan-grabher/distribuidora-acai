@@ -47,7 +47,6 @@ function calcularParcelaAtual(dataInicio: string): number {
 }
 
 function gastoEstaAtivoNestesMes(gasto: Gasto): boolean {
-  if (!gasto.ativo) return false
   const agora = new Date()
   const inicio = new Date(gasto.data_inicio + 'T00:00:00')
   const mesInicioAbsoluto = inicio.getFullYear() * 12 + inicio.getMonth()
@@ -263,7 +262,11 @@ export default function ListaGastos() {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={ativoNestesMes ? 'Ativo este mês' : gasto.ativo ? 'Inativo este mês' : 'Desativado'}
+                      label={
+                        ativoNestesMes
+                          ? (gasto.status === 'pago' ? 'Pago este mês' : 'Pendente este mês')
+                          : (gasto.status === 'pago' ? 'Pago' : 'Pendente')
+                      }
                       color={ativoNestesMes ? 'success' : 'default'}
                       size="small"
                     />

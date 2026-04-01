@@ -8,7 +8,8 @@ export interface Gasto {
   categoria: string | null
   data_inicio: string
   total_parcelas: number | null
-  ativo: boolean
+  numero_parcela?: number | null
+  status: 'pendente' | 'pago'
   criado_em: string
 }
 
@@ -19,7 +20,8 @@ export interface NovoGasto {
   categoria?: string | null
   data_inicio: string
   total_parcelas?: number | null
-  ativo?: boolean
+  numero_parcela?: number | null
+  status?: 'pendente' | 'pago'
 }
 
 export interface EdicaoGasto {
@@ -29,5 +31,6 @@ export interface EdicaoGasto {
   categoria?: string | null
   data_inicio?: string
   total_parcelas?: number | null
-  ativo?: boolean
+  numero_parcela?: number | null
+  status?: 'pendente' | 'pago'
 }
