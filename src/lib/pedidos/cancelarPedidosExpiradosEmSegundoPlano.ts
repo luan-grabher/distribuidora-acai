@@ -5,7 +5,7 @@ const CINCO_MINUTOS_EM_MS = 5 * 60 * 1000
 
 let timestampUltimaExecucaoCancelamentoPedidos: number | null = null
 
-export function cancelarPedidosExpiradosEmSegundoPlanoSeNecessario(): void {
+export function executarCancelamentoPedidosSeNecessario(): void {
   const agora = Date.now()
   const deveExecutar =
     timestampUltimaExecucaoCancelamentoPedidos === null ||
