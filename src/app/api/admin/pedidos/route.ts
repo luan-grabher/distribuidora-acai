@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { listarPedidos } from '@/lib/pedidos/listarPedidos'
 import { criarPedido } from '@/lib/pedidos/criarPedido'
 import { verificarSessao } from '@/lib/auth/verificarSessao'
+import { cancelarPedidosExpiradosEmSegundoPlanoSeNecessario } from '@/lib/pedidos/cancelarPedidosExpiradosEmSegundoPlano'
 import type { NovoPedido } from '@/types/pedido'
 
 async function autenticarAdmin(request: NextRequest) {
@@ -15,6 +16,7 @@ export async function GET(request: NextRequest) {
   if (!usuario) return NextResponse.json({ erro: 'Não autorizado' }, { status: 401 })
 
   try {
+    cancelarPedidosExpiradosEmSegundoPlanoSeNecessario()
     const pedidos = await listarPedidos()
     return NextResponse.json(pedidos)
   } catch {

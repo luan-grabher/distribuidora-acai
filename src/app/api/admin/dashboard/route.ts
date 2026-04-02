@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verificarSessao } from '@/lib/auth/verificarSessao'
 import { listarPedidosMesAtual } from '@/lib/pedidos/listarPedidosMesAtual'
 import { calcularDadosDashboard } from '@/lib/dashboard/calcularDadosDashboard'
+import { cancelarPedidosExpiradosEmSegundoPlanoSeNecessario } from '@/lib/pedidos/cancelarPedidosExpiradosEmSegundoPlano'
 
 async function autenticarAdmin(request: NextRequest) {
   const token = request.cookies.get('admin_token')?.value
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
   if (!usuario) return NextResponse.json({ erro: 'Não autorizado' }, { status: 401 })
 
   try {
+    cancelarPedidosExpiradosEmSegundoPlanoSeNecessario()
     const pedidos = await listarPedidosMesAtual()
     const dados = calcularDadosDashboard(pedidos)
     return NextResponse.json(dados)
