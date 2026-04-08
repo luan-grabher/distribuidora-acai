@@ -4,6 +4,7 @@ export type Item = {
   descricao: string
   imagem_url: string
   preco: number
+  promocao_ativa: number | null
   estoque: number
   ativo: boolean
   criado_em: string
