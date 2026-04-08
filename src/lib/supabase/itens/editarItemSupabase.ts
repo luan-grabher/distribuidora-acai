@@ -1,5 +1,6 @@
 import { getClienteSupabaseAdmin } from '../clienteSupabase'
 import type { Item, EdicaoItem } from '@/types/item'
+import { normalizarCamposNumericosDoItem } from './normalizarItem'
 
 export async function editarItemSupabase(id: string, dados: EdicaoItem): Promise<Item> {
   const { data, error } = await getClienteSupabaseAdmin()
@@ -10,5 +11,5 @@ export async function editarItemSupabase(id: string, dados: EdicaoItem): Promise
     .single()
 
   if (error) throw new Error(error.message)
-  return data as Item
+  return normalizarCamposNumericosDoItem(data as Item)
 }
