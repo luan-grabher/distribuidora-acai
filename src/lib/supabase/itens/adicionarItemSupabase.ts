@@ -1,5 +1,6 @@
 import { getClienteSupabaseAdmin } from '../clienteSupabase'
 import type { Item, NovoItem } from '@/types/item'
+import { normalizarCamposNumericosDoItem } from './normalizarItem'
 
 export async function adicionarItemSupabase(item: NovoItem): Promise<Item> {
   const { data, error } = await getClienteSupabaseAdmin()
@@ -9,5 +10,5 @@ export async function adicionarItemSupabase(item: NovoItem): Promise<Item> {
     .single()
 
   if (error) throw new Error(error.message)
-  return data as Item
+  return normalizarCamposNumericosDoItem(data as Item)
 }

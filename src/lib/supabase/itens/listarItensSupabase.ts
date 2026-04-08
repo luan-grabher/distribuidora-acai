@@ -1,5 +1,6 @@
 import { getClienteSupabaseAdmin } from '../clienteSupabase'
 import type { Item } from '@/types/item'
+import { normalizarCamposNumericosDoItem } from './normalizarItem'
 
 export async function buscarItemPorIdSupabase(id: string): Promise<Item | null> {
   const { data, error } = await getClienteSupabaseAdmin()
@@ -9,7 +10,7 @@ export async function buscarItemPorIdSupabase(id: string): Promise<Item | null> 
     .single()
 
   if (error) return null
-  return data as Item
+  return normalizarCamposNumericosDoItem(data as Item)
 }
 
 export async function listarItensSupabase(): Promise<Item[]> {
@@ -20,7 +21,7 @@ export async function listarItensSupabase(): Promise<Item[]> {
     .order('nome', { ascending: true })
 
   if (error) throw new Error(error.message)
-  return data as Item[]
+  return (data as Item[]).map(normalizarCamposNumericosDoItem)
 }
 
 export async function listarTodosItensSupabase(): Promise<Item[]> {
@@ -30,5 +31,5 @@ export async function listarTodosItensSupabase(): Promise<Item[]> {
     .order('nome', { ascending: true })
 
   if (error) throw new Error(error.message)
-  return data as Item[]
+  return (data as Item[]).map(normalizarCamposNumericosDoItem)
 }
