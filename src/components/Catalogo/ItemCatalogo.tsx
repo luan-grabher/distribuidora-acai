@@ -68,17 +68,35 @@ export default function ItemCatalogo({ item, onAdicionar, onDiminuir, quantidade
           <Typography variant="h6" fontWeight={700} color="text.primary" sx={{ lineHeight: 1.2 }}>
             {item.nome}
           </Typography>
-          {semEstoque && (
-            <Chip label="Indisponível" size="small" color="default" />
-          )}
+          <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
+            {item.promocao_ativa != null && !semEstoque && (
+              <Chip label="Promoção" size="small" color="error" />
+            )}
+            {semEstoque && (
+              <Chip label="Indisponível" size="small" color="default" />
+            )}
+          </Box>
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2, lineHeight: 1.5 }}>
           {item.descricao}
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h5" fontWeight={800} color="primary">
-            R$ {item.preco.toFixed(2).replace('.', ',')}
-          </Typography>
+          <Box>
+            {item.promocao_ativa != null ? (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through', lineHeight: 1 }}>
+                  R$ {item.preco.toFixed(2).replace('.', ',')}
+                </Typography>
+                <Typography variant="h5" fontWeight={800} color="error">
+                  R$ {item.promocao_ativa.toFixed(2).replace('.', ',')}
+                </Typography>
+              </Box>
+            ) : (
+              <Typography variant="h5" fontWeight={800} color="primary">
+                R$ {item.preco.toFixed(2).replace('.', ',')}
+              </Typography>
+            )}
+          </Box>
           {quantidade > 0 && (
               <Typography variant="subtitle2" fontWeight={700} color="text.secondary" display={'flex'} alignItems="center" gap={0.5} lineHeight={1}>
                 <b>{quantidade}x</b>

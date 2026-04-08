@@ -26,11 +26,12 @@ export function useCarrinho() {
   }, [])
 
   const adicionarAoCarrinho = useCallback((item: Item) => {
+    const precoUtilizadoParaItemNoCarrinho = item.promocao_ativa ?? item.preco
     setItens((anterior) => {
       const existente = anterior.find((i) => i.id === item.id)
       const novosItens = existente
         ? anterior.map((i) => i.id === item.id ? { ...i, quantidade: i.quantidade + 1 } : i)
-        : [...anterior, { id: item.id, nome: item.nome, preco: item.preco, imagem_url: item.imagem_url, quantidade: 1 }]
+        : [...anterior, { id: item.id, nome: item.nome, preco: precoUtilizadoParaItemNoCarrinho, imagem_url: item.imagem_url, quantidade: 1 }]
       localStorage.setItem(CHAVE_LOCALSTORAGE, JSON.stringify(novosItens))
       return novosItens
     })
