@@ -69,7 +69,7 @@ export default function ItemCatalogo({ item, onAdicionar, onDiminuir, quantidade
             {item.nome}
           </Typography>
           <Box sx={{ display: 'flex', gap: 0.5, flexShrink: 0 }}>
-            {item.promocao_ativa && !semEstoque && (
+            {item.promocao_ativa !== null && !semEstoque && (
               <Chip label="Promoção" size="small" color="error" />
             )}
             {semEstoque && (
@@ -82,7 +82,7 @@ export default function ItemCatalogo({ item, onAdicionar, onDiminuir, quantidade
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
-            {item.promocao_ativa ? (
+            {item.promocao_ativa !== null ? (
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
                 <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through', lineHeight: 1 }}>
                   R$ {item.preco.toFixed(2).replace('.', ',')}
