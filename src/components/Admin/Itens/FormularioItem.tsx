@@ -260,10 +260,10 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 label="Promoção Ativa (R$)"
                 type="number"
                 inputProps={{ min: 0, step: 0.01 }}
-                value={dados.promocao_ativa !== null ? dados.promocao_ativa : ''}
+                value={dados.promocao_ativa != null ? dados.promocao_ativa : ''}
                 onChange={(e) => handleChange('promocao_ativa', e.target.value ? parseFloat(e.target.value) : null)}
                 placeholder="Deixe vazio para desativar"
-                helperText={dados.promocao_ativa ? 'Preço original será exibido riscado no catálogo' : 'Sem promoção ativa'}
+                helperText={dados.promocao_ativa != null ? 'Preço original será exibido riscado no catálogo' : 'Sem promoção ativa'}
               />
             </Grid>
             <Grid size={12}>
