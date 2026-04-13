@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "supabase link --project-ref ${SUPABASE_PROJECT_REF:?SUPABASE_PROJECT_REF nao configurada} && supabase db push && next dev",
     "build": "next build",
+    "vercel-build": "supabase link --project-ref ${SUPABASE_PROJECT_REF:?SUPABASE_PROJECT_REF nao configurada} && supabase db push && next build",
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest"

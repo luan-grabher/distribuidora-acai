@@ -1,0 +1,2 @@
+ALTER TABLE pedidos
+  ADD COLUMN taxa_entrega NUMERIC(10,2) NOT NULL DEFAULT 0;
