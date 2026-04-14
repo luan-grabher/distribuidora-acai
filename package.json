@@ -3,9 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "supabase link --project-ref ${SUPABASE_PROJECT_REF:?SUPABASE_PROJECT_REF nao configurada} && supabase db push && next dev",
+    "dev": "tsx scripts/dev.ts",
     "build": "next build",
-    "vercel-build": "supabase link --project-ref ${SUPABASE_PROJECT_REF:?SUPABASE_PROJECT_REF nao configurada} && supabase db push && next build",
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -34,6 +33,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "dotenv": "^17.3.1",
     "jsdom": "^26.1.0",
+    "supabase": "^2.91.1",
     "tsx": "^4.21.0",
     "typescript": "5.9.3",
     "vitest": "^4.0.18"

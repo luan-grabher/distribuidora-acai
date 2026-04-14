@@ -45,3 +45,4 @@ pnpm-lock.yaml
 # supabase
 supabase/.branches
 supabase/.temp
+dump.sql
