@@ -31,6 +31,11 @@ function obterNomeMes(mes: number, ano: number): string {
   return new Date(ano, mes - 1, 1).toLocaleString('pt-BR', { month: 'long', year: 'numeric' })
 }
 
+function obterSubtituloProjecaoFaturamento(mediaFaturamentoPorDia: number, diasRestantes: number): string {
+  if (diasRestantes <= 0) return 'Mês encerrado'
+  return `+${formatarReais(mediaFaturamentoPorDia * diasRestantes)} nos próximos ${diasRestantes} dias`
+}
+
 export default function InicioDashboard() {
   const { dados, carregando, erro, mes, ano, eMesAtual, irParaMesAnterior, irParaProximoMes } = useDashboardAdmin()
 
@@ -107,7 +112,7 @@ export default function InicioDashboard() {
           <CartaoMetricaDashboard
             titulo="Projeção de Faturamento"
             valor={formatarReais(dados.projecaoFaturamentoMes)}
-            subtitulo={dados.diasRestantes > 0 ? `+${formatarReais(dados.mediaFaturamentoPorDia * dados.diasRestantes)} nos próximos ${dados.diasRestantes} dias` : 'Mês encerrado'}
+            subtitulo={obterSubtituloProjecaoFaturamento(dados.mediaFaturamentoPorDia, dados.diasRestantes)}
             corDestaque="#F9A800"
             Icone={TrendingUpIcon}
             corIcone="#C47A00"

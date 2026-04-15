@@ -46,13 +46,12 @@ export function useDashboardAdmin() {
   }, [])
 
   const irParaProximoMes = useCallback(() => {
-    const agoraLocal = new Date()
     setMes((mesAtual) => {
       const anoParaVerificar = mesAtual === 12 ? ano + 1 : ano
       const proximoMes = mesAtual === 12 ? 1 : mesAtual + 1
       const estaNoFuturo =
-        anoParaVerificar > agoraLocal.getFullYear() ||
-        (anoParaVerificar === agoraLocal.getFullYear() && proximoMes > agoraLocal.getMonth() + 1)
+        anoParaVerificar > agora.getFullYear() ||
+        (anoParaVerificar === agora.getFullYear() && proximoMes > agora.getMonth() + 1)
       if (estaNoFuturo) return mesAtual
       if (mesAtual === 12) {
         setAno((anoAtual) => anoAtual + 1)
