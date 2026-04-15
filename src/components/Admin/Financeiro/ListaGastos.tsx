@@ -29,6 +29,8 @@ import RepeatIcon from '@mui/icons-material/Repeat'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import EventIcon from '@mui/icons-material/Event'
 import PendingActionsIcon from '@mui/icons-material/PendingActions'
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
+import ChevronRightIcon from '@mui/icons-material/ChevronRight'
 import FormularioGasto from './FormularioGasto'
 import CabecalhoPagina from '../CabecalhoPagina'
 import CartaoMetricaDashboard from '../Dashboard/CartaoMetricaDashboard'
@@ -100,6 +102,18 @@ export default function ListaGastos() {
     } else {
       await criarGasto(dados as NovoGasto)
     }
+  }
+
+  const irParaMesAnterior = () => {
+    const [y, m] = mesSelecionado.split('-').map(Number)
+    const data = new Date(y, m - 2)
+    setMesSelecionado(`${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`)
+  }
+
+  const irParaProximoMes = () => {
+    const [y, m] = mesSelecionado.split('-').map(Number)
+    const data = new Date(y, m)
+    setMesSelecionado(`${data.getFullYear()}-${String(data.getMonth() + 1).padStart(2, '0')}`)
   }
 
   const handleExcluir = async () => {
@@ -223,7 +237,10 @@ export default function ListaGastos() {
         ))}
       </Box>
 
-      <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+        <IconButton onClick={irParaMesAnterior} size="small" sx={{ color: '#4A0080' }}>
+          <ChevronLeftIcon />
+        </IconButton>
         <TextField
           label="Mês"
           type="month"
@@ -232,6 +249,9 @@ export default function ListaGastos() {
           size="small"
           sx={{ width: 180 }}
         />
+        <IconButton onClick={irParaProximoMes} size="small" sx={{ color: '#4A0080' }}>
+          <ChevronRightIcon />
+        </IconButton>
       </Box>
 
       <TableContainer component={Paper} sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
