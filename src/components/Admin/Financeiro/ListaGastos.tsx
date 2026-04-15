@@ -28,10 +28,12 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 import RepeatIcon from '@mui/icons-material/Repeat'
 import CreditCardIcon from '@mui/icons-material/CreditCard'
 import EventIcon from '@mui/icons-material/Event'
+import PendingActionsIcon from '@mui/icons-material/PendingActions'
 import FormularioGasto from './FormularioGasto'
 import CabecalhoPagina from '../CabecalhoPagina'
 import CartaoMetricaDashboard from '../Dashboard/CartaoMetricaDashboard'
 import { useGastosAdmin } from '@/hooks/useGastosAdmin'
+import { useGastosPagamentosMes } from '@/hooks/useGastosPagamentosMes'
 import { gastoEstaAtivoNoMes } from '@/lib/gastos/calcularGastosDoMes'
 import type { Gasto, NovoGasto, EdicaoGasto, TipoGasto } from '@/types/gasto'
 
@@ -75,6 +77,13 @@ export default function ListaGastos() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
   })
 
+  const [anoSelecionado, mesSelecionadoNumerico] = useMemo(() => {
+    const [y, m] = mesSelecionado.split('-').map(Number)
+    return [y, m]
+  }, [mesSelecionado])
+
+  const { pagamentos, alterarStatusMes } = useGastosPagamentosMes(anoSelecionado, mesSelecionadoNumerico)
+
   const abrirNovoGasto = () => {
     setGastoEdicao(null)
     setFormularioAberto(true)
@@ -100,29 +109,38 @@ export default function ListaGastos() {
   }
 
   const totalRecorrenteMensal = useMemo(() => {
-    const [y, m] = mesSelecionado.split('-').map(Number)
-    const mz = m - 1
-    return gastos.filter((g) => g.tipo === 'recorrente' && gastoEstaAtivoNoMes(g, y, mz)).reduce((soma, g) => soma + g.valor, 0)
-  }, [gastos, mesSelecionado])
+    const mz = mesSelecionadoNumerico - 1
+    return gastos.filter((g) => g.tipo === 'recorrente' && gastoEstaAtivoNoMes(g, anoSelecionado, mz)).reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, anoSelecionado, mesSelecionadoNumerico])
 
   const totalParceladoMensal = useMemo(() => {
-    const [y, m] = mesSelecionado.split('-').map(Number)
-    const mz = m - 1
-    return gastos.filter((g) => g.tipo === 'parcelado' && gastoEstaAtivoNoMes(g, y, mz)).reduce((soma, g) => soma + g.valor, 0)
-  }, [gastos, mesSelecionado])
+    const mz = mesSelecionadoNumerico - 1
+    return gastos.filter((g) => g.tipo === 'parcelado' && gastoEstaAtivoNoMes(g, anoSelecionado, mz)).reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, anoSelecionado, mesSelecionadoNumerico])
 
   const totalUnicoMensal = useMemo(() => {
-    const [y, m] = mesSelecionado.split('-').map(Number)
-    const mz = m - 1
-    return gastos.filter((g) => g.tipo === 'unico' && gastoEstaAtivoNoMes(g, y, mz)).reduce((soma, g) => soma + g.valor, 0)
-  }, [gastos, mesSelecionado])
+    const mz = mesSelecionadoNumerico - 1
+    return gastos.filter((g) => g.tipo === 'unico' && gastoEstaAtivoNoMes(g, anoSelecionado, mz)).reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, anoSelecionado, mesSelecionadoNumerico])
 
   const totalMesAtual = totalRecorrenteMensal + totalParceladoMensal + totalUnicoMensal
 
-  const gastosFiltrados = useMemo(
-    () => filtroAtivo === 'todos' ? gastos : gastos.filter((g) => g.tipo === filtroAtivo),
-    [gastos, filtroAtivo]
-  )
+  const totalPendentesMensal = useMemo(() => {
+    const mz = mesSelecionadoNumerico - 1
+    return gastos
+      .filter((g) => gastoEstaAtivoNoMes(g, anoSelecionado, mz) && (pagamentos[g.id] ?? 'pendente') === 'pendente')
+      .reduce((soma, g) => soma + g.valor, 0)
+  }, [gastos, anoSelecionado, mesSelecionadoNumerico, pagamentos])
+
+  const gastosFiltrados = useMemo(() => {
+    const mz = mesSelecionadoNumerico - 1
+    return gastos.filter((g) => {
+      const ativoNoMes = gastoEstaAtivoNoMes(g, anoSelecionado, mz)
+      if (!ativoNoMes) return false
+      if (filtroAtivo === 'todos') return true
+      return g.tipo === filtroAtivo
+    })
+  }, [gastos, filtroAtivo, anoSelecionado, mesSelecionadoNumerico])
 
   if (carregando) {
     return (
@@ -150,6 +168,15 @@ export default function ListaGastos() {
             subtitulo="Todos os gastos ativos"
             corDestaque="#4A0080"
             Icone={AttachMoneyIcon}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+          <CartaoMetricaDashboard
+            titulo="Pendentes este mês"
+            valor={formatarReais(totalPendentesMensal)}
+            subtitulo="Gastos ainda não pagos"
+            corDestaque="#D32F2F"
+            Icone={PendingActionsIcon}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
@@ -223,10 +250,10 @@ export default function ListaGastos() {
           </TableHead>
           <TableBody>
             {gastosFiltrados.map((gasto) => {
-              const [y, m] = mesSelecionado.split('-').map(Number)
-              const mz = m - 1
-              const parcelaAtual = gasto.tipo === 'parcelado' ? calcularParcelaAtual(gasto.data_inicio, y, mz) : null
-              const ativoNestesMes = gastoEstaAtivoNoMes(gasto, y, mz)
+              const mz = mesSelecionadoNumerico - 1
+              const parcelaAtual = gasto.tipo === 'parcelado' ? calcularParcelaAtual(gasto.data_inicio, anoSelecionado, mz) : null
+              const statusNoMes = pagamentos[gasto.id] ?? 'pendente'
+              const estaPago = statusNoMes === 'pago'
               return (
                 <TableRow key={gasto.id} hover>
                   <TableCell>
@@ -263,13 +290,11 @@ export default function ListaGastos() {
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={
-                        ativoNestesMes
-                          ? (gasto.status === 'pago' ? 'Pago este mês' : 'Pendente este mês')
-                          : (gasto.status === 'pago' ? 'Pago' : 'Pendente')
-                      }
-                      color={ativoNestesMes ? 'success' : 'default'}
+                      label={estaPago ? 'Pago' : 'Pendente'}
+                      color={estaPago ? 'success' : 'warning'}
                       size="small"
+                      onClick={() => alterarStatusMes(gasto.id, estaPago ? 'pendente' : 'pago')}
+                      sx={{ cursor: 'pointer' }}
                     />
                   </TableCell>
                   <TableCell align="right">
@@ -286,7 +311,7 @@ export default function ListaGastos() {
             {gastosFiltrados.length === 0 && (
               <TableRow>
                 <TableCell colSpan={8} align="center" sx={{ py: 6 }}>
-                  <Typography color="text.secondary">Nenhum gasto cadastrado</Typography>
+                  <Typography color="text.secondary">Nenhum gasto ativo neste mês</Typography>
                 </TableCell>
               </TableRow>
             )}
