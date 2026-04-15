@@ -1,4 +1,4 @@
-CREATE TABLE itens_catalogo (
+CREATE TABLE IF NOT EXISTS itens_catalogo (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   nome TEXT NOT NULL,
   descricao TEXT NOT NULL DEFAULT '',
@@ -9,7 +9,7 @@ CREATE TABLE itens_catalogo (
   criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE pedidos (
+CREATE TABLE IF NOT EXISTS pedidos (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   itens JSONB NOT NULL DEFAULT '[]',
   total NUMERIC(10, 2) NOT NULL,

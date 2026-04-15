@@ -1,2 +1,2 @@
 ALTER TABLE itens_catalogo
-  ADD COLUMN codigo_barras TEXT;
+  ADD COLUMN IF NOT EXISTS codigo_barras TEXT;

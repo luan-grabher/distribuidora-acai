@@ -1,4 +1,4 @@
-CREATE TABLE gastos (
+CREATE TABLE IF NOT EXISTS gastos (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   descricao TEXT NOT NULL,
   valor NUMERIC(10,2) NOT NULL,
