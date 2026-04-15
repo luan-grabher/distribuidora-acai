@@ -1,8 +1,12 @@
 import type { Pedido } from '@/types/pedido'
+import type { Item } from '@/types/item'
+import type { Gasto } from '@/types/gasto'
 import type { DadosDashboard, FaturamentoDiario, ItemMaisVendido, VendaPorFormaPagamento } from '@/types/dashboard'
+import { calcularLucroItem } from '@/lib/itens/calcularLucroItem'
+import { calcularTotalGastosDoMes } from '@/lib/gastos/calcularGastosDoMes'
 
 function obterDiasDoMes(ano: number, mes: number): number {
-  return new Date(ano, mes + 1, 0).getDate()
+  return new Date(ano, mes, 0).getDate()
 }
 
 function calcularFaturamentoPorDia(pedidos: Pedido[], diasDecorridos: number): FaturamentoDiario[] {
@@ -72,20 +76,55 @@ function calcularVendasPorFormaPagamento(pedidos: Pedido[]): VendaPorFormaPagame
     .sort((a, b) => b.quantidade - a.quantidade)
 }
 
-export function calcularDadosDashboard(pedidos: Pedido[]): DadosDashboard {
+function calcularLucroTotalDoPeriodo(pedidos: Pedido[], itensCatalogoPorId: Record<string, Item>): number {
+  let lucro = 0
+  for (const pedido of pedidos) {
+    for (const itemPedido of pedido.itens) {
+      const itemCatalogo = itensCatalogoPorId[itemPedido.id] ?? null
+      lucro += calcularLucroItem(itemCatalogo, itemPedido)
+    }
+  }
+  return lucro
+}
+
+export function calcularDadosDashboard(
+  pedidos: Pedido[],
+  itensCatalogo: Item[],
+  gastos: Gasto[],
+  ano: number,
+  mes: number,
+): DadosDashboard {
   const agora = new Date()
-  const diasNoMes = obterDiasDoMes(agora.getFullYear(), agora.getMonth())
-  const diasDecorridos = agora.getDate()
-  const diasRestantes = diasNoMes - diasDecorridos
+  const diasNoMes = obterDiasDoMes(ano, mes)
+  const eMesAtual = agora.getFullYear() === ano && agora.getMonth() + 1 === mes
+  const diasDecorridos = eMesAtual ? agora.getDate() : diasNoMes
+  const diasRestantes = eMesAtual ? diasNoMes - diasDecorridos : 0
 
   const totalFaturadoNoMes = pedidos.reduce((soma, pedido) => soma + pedido.total, 0)
   const mediaFaturamentoPorDia = diasDecorridos > 0 ? totalFaturadoNoMes / diasDecorridos : 0
   const projecaoFaturamentoMes = totalFaturadoNoMes + diasRestantes * mediaFaturamentoPorDia
 
+  const itensCatalogoPorId: Record<string, Item> = {}
+  for (const item of itensCatalogo) {
+    itensCatalogoPorId[item.id] = item
+  }
+
+  const lucroAtual = calcularLucroTotalDoPeriodo(pedidos, itensCatalogoPorId)
+  const mediaDeLucroPorDia = diasDecorridos > 0 ? lucroAtual / diasDecorridos : 0
+  const projecaoLucroMesAntesDosGastos = lucroAtual + diasRestantes * mediaDeLucroPorDia
+  const totalGastosNoMes = calcularTotalGastosDoMes(gastos, ano, mes)
+  const projecaoLucroMes = projecaoLucroMesAntesDosGastos - totalGastosNoMes
+
   return {
+    mes,
+    ano,
     totalFaturadoNoMes,
     mediaFaturamentoPorDia,
     projecaoFaturamentoMes,
+    lucroAtual,
+    mediaDeLucroPorDia,
+    projecaoLucroMes,
+    totalGastosNoMes,
     diasDecorridos,
     diasRestantes,
     diasNoMes,
