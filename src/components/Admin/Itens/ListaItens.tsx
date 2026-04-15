@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Dialog from '@mui/material/Dialog'
 import DialogTitle from '@mui/material/DialogTitle'
 import DialogContent from '@mui/material/DialogContent'
@@ -21,6 +21,9 @@ import Avatar from '@mui/material/Avatar'
 import Chip from '@mui/material/Chip'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
+import SearchIcon from '@mui/icons-material/Search'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import FormularioItem from './FormularioItem'
@@ -32,8 +35,19 @@ export default function ListaItens() {
   const { itens, carregando, erro, criarItem, atualizarItem, excluirItem } = useItensAdmin()
   const [formularioAberto, setFormularioAberto] = useState(false)
   const [itemEdicao, setItemEdicao] = useState<Item | null>(null)
+  const [textoPesquisa, setTextoPesquisa] = useState('')
 
   const [idParaExcluir, setIdParaExcluir] = useState<string | null>(null)
+
+  const itensFiltrados = useMemo(() => {
+    const termoBuscaNormalizado = textoPesquisa.trim().toLowerCase()
+    if (!termoBuscaNormalizado) return itens
+    return itens.filter(
+      (item) =>
+        item.nome.toLowerCase().includes(termoBuscaNormalizado) ||
+        item.descricao.toLowerCase().includes(termoBuscaNormalizado),
+    )
+  }, [itens, textoPesquisa])
 
   const confirmarExclusao = (id: string) => setIdParaExcluir(id)
 
@@ -79,6 +93,23 @@ export default function ListaItens() {
 
       {erro && <Alert severity="error">{erro}</Alert>}
 
+      <TextField
+        placeholder="Pesquisar por nome ou descrição..."
+        value={textoPesquisa}
+        onChange={(e) => setTextoPesquisa(e.target.value)}
+        size="small"
+        sx={{ maxWidth: 400 }}
+        slotProps={{
+          input: {
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon fontSize="small" />
+              </InputAdornment>
+            ),
+          },
+        }}
+      />
+
       <TableContainer component={Paper} sx={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }}>
         <Table>
           <TableHead>
@@ -91,7 +122,7 @@ export default function ListaItens() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {itens.map((item) => (
+            {itensFiltrados.map((item) => (
               <TableRow key={item.id} hover>
                 <TableCell>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -132,10 +163,12 @@ export default function ListaItens() {
                 </TableCell>
               </TableRow>
             ))}
-            {itens.length === 0 && (
+            {itensFiltrados.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                  <Typography color="text.secondary">Nenhum item cadastrado</Typography>
+                  <Typography color="text.secondary">
+                    {textoPesquisa.trim() ? 'Nenhum item encontrado para a pesquisa' : 'Nenhum item cadastrado'}
+                  </Typography>
                 </TableCell>
               </TableRow>
             )}
