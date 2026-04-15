@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "tsx scripts/dev.ts",
     "build": "next build",
+    "vercel-build": "next build && next export",
     "start": "next start",
     "test": "vitest run",
     "test:watch": "vitest"
