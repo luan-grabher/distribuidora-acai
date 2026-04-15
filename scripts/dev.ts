@@ -9,8 +9,14 @@ if (!supabaseProjectRef) {
   process.exit(1);
 }
 
+const supabaseAccessToken = process.env.SUPABASE_ACCESS_TOKEN;
+const execEnv = supabaseAccessToken
+  ? { ...process.env, SUPABASE_ACCESS_TOKEN: supabaseAccessToken }
+  : process.env;
+
 execSync(`supabase link --project-ref ${supabaseProjectRef}`, {
   stdio: "inherit",
+  env: execEnv,
 });
-execSync("supabase db push", { stdio: "inherit" });
+execSync("supabase db push", { stdio: "inherit", env: execEnv });
 execSync("next dev", { stdio: "inherit" });
