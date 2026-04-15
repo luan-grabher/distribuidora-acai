@@ -30,6 +30,7 @@ const valoresIniciais: NovoItem = {
   descricao: '',
   imagem_url: '',
   preco: 0,
+  custo: null,
   promocao_ativa: null,
   estoque: 0,
   ativo: true,
@@ -52,6 +53,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
       descricao: itemEdicao.descricao,
       imagem_url: itemEdicao.imagem_url,
       preco: itemEdicao.preco,
+      custo: itemEdicao.custo ?? null,
       promocao_ativa: itemEdicao.promocao_ativa ?? null,
       estoque: itemEdicao.estoque,
       ativo: itemEdicao.ativo,
@@ -241,6 +243,18 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 value={dados.preco}
                 onChange={(e) => handleChange('preco', parseFloat(e.target.value) || 0)}
                 required
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
+                label="Custo (R$)"
+                type="number"
+                inputProps={{ min: 0, step: 0.01 }}
+                value={dados.custo != null ? dados.custo : ''}
+                onChange={(e) => handleChange('custo', e.target.value ? parseFloat(e.target.value) : null)}
+                placeholder="Deixe vazio se não souber"
+                helperText="Usado para calcular o lucro por item vendido"
               />
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>

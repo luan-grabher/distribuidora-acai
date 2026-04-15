@@ -18,9 +18,15 @@ export type VendaPorFormaPagamento = {
 }
 
 export type DadosDashboard = {
+  mes: number
+  ano: number
   totalFaturadoNoMes: number
   mediaFaturamentoPorDia: number
   projecaoFaturamentoMes: number
+  lucroAtual: number
+  mediaDeLucroPorDia: number
+  projecaoLucroMes: number
+  totalGastosNoMes: number
   diasDecorridos: number
   diasRestantes: number
   diasNoMes: number

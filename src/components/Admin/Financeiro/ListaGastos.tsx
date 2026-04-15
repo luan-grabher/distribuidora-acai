@@ -32,6 +32,7 @@ import FormularioGasto from './FormularioGasto'
 import CabecalhoPagina from '../CabecalhoPagina'
 import CartaoMetricaDashboard from '../Dashboard/CartaoMetricaDashboard'
 import { useGastosAdmin } from '@/hooks/useGastosAdmin'
+import { gastoEstaAtivoNoMes } from '@/lib/gastos/calcularGastosDoMes'
 import type { Gasto, NovoGasto, EdicaoGasto, TipoGasto } from '@/types/gasto'
 
 function formatarReais(valor: number): string {
@@ -42,23 +43,6 @@ function calcularParcelaAtual(dataInicio: string, targetYear: number, targetMont
   const inicio = new Date(dataInicio)
   const mesesDecorridos = (targetYear - inicio.getFullYear()) * 12 + (targetMonthZeroBased - inicio.getMonth())
   return Math.max(1, mesesDecorridos + 1)
-}
-
-function gastoEstaAtivoNoMes(gasto: Gasto, targetYear: number, targetMonthZeroBased: number): boolean {
-  const inicio = new Date(gasto.data_inicio)
-  const mesInicioAbsoluto = inicio.getFullYear() * 12 + inicio.getMonth()
-  const mesAlvoAbsoluto = targetYear * 12 + targetMonthZeroBased
-
-  if (mesAlvoAbsoluto < mesInicioAbsoluto) return false
-
-  if (gasto.tipo === 'unico') return mesInicioAbsoluto === mesAlvoAbsoluto
-
-  if (gasto.tipo === 'parcelado') {
-    const parcelaAtual = mesAlvoAbsoluto - mesInicioAbsoluto + 1
-    return parcelaAtual <= (gasto.total_parcelas ?? 0)
-  }
-
-  return true
 }
 
 const corPorTipo: Record<TipoGasto, 'default' | 'primary' | 'warning'> = {

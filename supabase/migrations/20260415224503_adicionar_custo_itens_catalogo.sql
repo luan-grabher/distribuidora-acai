@@ -1,0 +1,2 @@
+ALTER TABLE itens_catalogo
+  ADD COLUMN IF NOT EXISTS custo NUMERIC(10, 2);
