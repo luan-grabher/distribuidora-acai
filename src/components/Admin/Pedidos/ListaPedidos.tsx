@@ -256,6 +256,7 @@ export default function ListaPedidos() {
   const handleEditarPedido = async (dados: NovoPedido) => {
     if (!pedidoParaEditar) return
     await atualizarPedido(pedidoParaEditar.id, {
+      status: dados.status,
       itens: dados.itens,
       total: dados.total,
       pagamentos: dados.pagamentos,
