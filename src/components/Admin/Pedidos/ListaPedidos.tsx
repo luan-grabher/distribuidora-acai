@@ -217,7 +217,7 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover, onEditar }: PropsLinh
           </Collapse>
         </TableCell>
       </TableRow>
-      <Dialog open={confirmacaoExclusaoAberta} onClose={() => setConfirmacaoExclusaoAberta(false)}>
+      <Dialog open={confirmacaoExclusaoAberta} onClose={() => setConfirmacaoExclusaoAberta(false)} PaperProps={{ sx: { borderRadius: { xs: '8px', sm: '16px' }, margin: { xs: 1, sm: 3 }, width: '100%' } }}>
         <DialogTitle>Excluir pedido</DialogTitle>
         <DialogContent>
           <DialogContentText>

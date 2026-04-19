@@ -32,7 +32,7 @@ const valoresIniciais: NovoItem = {
   preco: 0,
   custo: null,
   promocao_ativa: null,
-  estoque: 0,
+  estoque: 1,
   ativo: true,
   codigo_barras: null,
 }
@@ -144,7 +144,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
   }
 
   return (
-    <Dialog open={aberto} onClose={onFechar} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
+    <Dialog open={aberto} onClose={onFechar} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: { xs: '8px', sm: '16px' }, margin: { xs: 1, sm: 3 }, width: '100%' } }}>
       <DialogTitle fontWeight={700}>
         {itemEdicao ? 'Editar Item' : 'Novo Item'}
       </DialogTitle>
@@ -202,7 +202,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
             </Grid>
             <Grid size={12}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ width: 120, height: 120, bgcolor: 'background.default', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
+                <Box sx={{ width: 120, height: 120, flexShrink: 0, bgcolor: 'background.default', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', border: '1px solid', borderColor: 'divider' }}>
                   {estaFazendoUploadDeImagem ? (
                     <CircularProgress size={24} />
                   ) : previewCarregando ? (
@@ -215,11 +215,11 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                     <Box sx={{ px: 1, textAlign: 'center', color: 'text.secondary' }}>Sem imagem</Box>
                   )}
                 </Box>
-                <Box>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
                   <Typography component="span" sx={{ display: 'block', fontWeight: 600 }}>Preview da Imagem</Typography>
                   {dados.imagem_url ? (
                     <Box>
-                      <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 360, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {dados.imagem_url}
                       </Typography>
                       <Button size="small" color="error" onClick={() => handleChange('imagem_url', '')} sx={{ mt: 0.5, px: 0 }}>
@@ -227,7 +227,7 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                       </Button>
                     </Box>
                   ) : (
-                    <Typography sx={{ color: 'text.secondary', maxWidth: 360 }}>
+                    <Typography sx={{ color: 'text.secondary' }}>
                       Cole uma URL ou carregue uma imagem
                     </Typography>
                   )}

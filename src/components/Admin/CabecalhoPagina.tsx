@@ -13,7 +13,7 @@ type PropsCabecalhoPagina = {
 
 export default function CabecalhoPagina({ titulo, labelBotao, onClicarBotao }: PropsCabecalhoPagina) {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, pt: 2 }}>
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: { xs: 1.5, md: 0 }, mb: 3, pt: 2 }}>
       <Typography variant="h5" fontWeight={700}>
         {titulo}
       </Typography>

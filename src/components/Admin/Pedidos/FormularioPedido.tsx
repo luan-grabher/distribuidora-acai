@@ -394,7 +394,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   }
 
   return (
-    <Dialog open={aberto} onClose={onFechar} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
+    <Dialog open={aberto} onClose={onFechar} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: { xs: '8px', sm: '16px' }, margin: { xs: 1, sm: 3 }, width: '100%' } }}>
       <DialogTitle fontWeight={700}>
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
           {pedidoParaEditar ? 'Editar Pedido' : 'Novo Pedido'}

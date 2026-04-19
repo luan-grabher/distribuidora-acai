@@ -86,7 +86,7 @@ export default function FormularioGasto({ aberto, onFechar, gastoEdicao, onSalva
   }
 
   return (
-    <Dialog open={aberto} onClose={onFechar} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: '16px' } }}>
+    <Dialog open={aberto} onClose={onFechar} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: { xs: '8px', sm: '16px' }, margin: { xs: 1, sm: 3 }, width: '100%' } }}>
       <DialogTitle fontWeight={700}>
         {gastoEdicao ? 'Editar Gasto' : 'Novo Gasto'}
       </DialogTitle>

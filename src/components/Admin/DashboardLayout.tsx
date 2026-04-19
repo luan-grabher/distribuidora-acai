@@ -74,20 +74,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               style={{ borderRadius: '50%', objectFit: 'cover' }}
             />
             <Typography color="white" fontWeight={700}>
-              Admin — {siteConfig.company.name}
+              <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Admin — </Box>
+              {siteConfig.company.name}
             </Typography>
           </Link>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton onClick={alternarTelaCheia} sx={{ color: 'white' }} aria-label={estaEmTelaCheia ? 'Sair de tela cheia' : 'Ativar tela cheia'}>
+            <IconButton onClick={alternarTelaCheia} sx={{ color: 'white', display: { xs: 'none', md: 'flex' } }} aria-label={estaEmTelaCheia ? 'Sair de tela cheia' : 'Ativar tela cheia'}>
               {estaEmTelaCheia ? <FullscreenExitIcon /> : <FullscreenIcon />}
             </IconButton>
             <Button
               color="inherit"
               startIcon={<LogoutIcon />}
               onClick={fazerLogout}
-              sx={{ color: 'white' }}
+              sx={{ color: 'white', minWidth: 'auto' }}
             >
-              Sair
+              <Box component="span" sx={{ display: { xs: 'none', md: 'inline' } }}>Sair</Box>
             </Button>
           </Box>
         </Toolbar>
