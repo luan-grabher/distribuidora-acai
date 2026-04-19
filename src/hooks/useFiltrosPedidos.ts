@@ -45,7 +45,9 @@ export function useFiltrosPedidos(pedidos: Pedido[]) {
       }
 
       if (filtros.formaPagamento) {
-        if (pedido.forma_pagamento !== filtros.formaPagamento) return false
+        const temFormaNoPagamentos = pedido.pagamentos?.some(p => p.forma === filtros.formaPagamento)
+        const temNaFormaPagamentoLegada = pedido.forma_pagamento === filtros.formaPagamento
+        if (!temFormaNoPagamentos && !temNaFormaPagamentoLegada) return false
       }
 
       if (filtros.status) {

@@ -61,6 +61,7 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
       })),
       total: totalPreco,
       forma_pagamento: null,
+      pagamentos: [],
       nome_cliente: dadosCliente.nome,
       telefone_cliente: dadosCliente.telefone,
       taxa_entrega: 0,

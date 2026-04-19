@@ -30,7 +30,7 @@ import InputAdornment from '@mui/material/InputAdornment'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import BarcodeReaderIcon from '@mui/icons-material/BarcodeReader'
-import type { NovoPedido, ItemPedido, FormaPagamento, Pedido } from '@/types/pedido'
+import type { NovoPedido, ItemPedido, FormaPagamento, PagamentoParcial, Pedido } from '@/types/pedido'
 import { todasFormasPagamento, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
 import type { Item } from '@/types/item'
 
@@ -60,7 +60,9 @@ const isoParaInputDatetime = (isoString: string): string => {
 export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoParaEditar }: PropsFormularioPedido) {
   const [dadosCliente, setDadosCliente] = useState(dadosClienteIniciais)
   const [dataPedido, setDataPedido] = useState(obterDataAtualParaCampoDatetime)
-  const [formaPagamento, setFormaPagamento] = useState<FormaPagamento | ''>('')
+  const [pagamentos, setPagamentos] = useState<PagamentoParcial[]>([])
+  const [novaFormaPagamento, setNovaFormaPagamento] = useState<FormaPagamento | ''>('')
+  const [novoValorPagamento, setNovoValorPagamento] = useState<number | ''>('')
   const [itensCatalogo, setItensCatalogo] = useState<Item[]>([])
   const [itemSelecionadoId, setItemSelecionadoId] = useState('')
   const [precoItemSelecionado, setPrecoItemSelecionado] = useState<number | ''>('')
@@ -117,7 +119,13 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       if (pedidoParaEditar) {
         setDadosCliente({ nome_cliente: pedidoParaEditar.nome_cliente, telefone_cliente: pedidoParaEditar.telefone_cliente })
         setDataPedido(isoParaInputDatetime(pedidoParaEditar.criado_em))
-        setFormaPagamento(pedidoParaEditar.forma_pagamento ?? '')
+        setPagamentos(
+          pedidoParaEditar.pagamentos?.length > 0
+            ? pedidoParaEditar.pagamentos
+            : pedidoParaEditar.forma_pagamento
+              ? [{ forma: pedidoParaEditar.forma_pagamento, valor: pedidoParaEditar.total }]
+              : []
+        )
         setItensDoPedido(pedidoParaEditar.itens)
         const temEntrega = pedidoParaEditar.taxa_entrega > 0
         setTeleEntrega(temEntrega)
@@ -125,11 +133,13 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       } else {
         setDadosCliente(dadosClienteIniciais)
         setDataPedido(obterDataAtualParaCampoDatetime())
-        setFormaPagamento('')
+        setPagamentos([])
         setItensDoPedido([])
         setTeleEntrega(false)
         setTaxaEntrega(TAXA_ENTREGA_PADRAO)
       }
+      setNovaFormaPagamento('')
+      setNovoValorPagamento('')
       setPrecisaDeTroco(false)
       setValorPagoEmDinheiro('')
       setItemSelecionadoId('')
@@ -158,19 +168,34 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   const taxaEntregaFinal = teleEntrega ? taxaEntrega : 0
   const totalComEntrega = totalDoPedido + taxaEntregaFinal
 
-  const pagamentoEhDinheiro = formaPagamento === 'dinheiro'
-  const trocoCalculado = precisaDeTroco && pagamentoEhDinheiro && typeof valorPagoEmDinheiro === 'number'
-    ? valorPagoEmDinheiro - totalComEntrega
+  const totalJaPago = pagamentos.reduce((soma, p) => soma + p.valor, 0)
+  const valorRestanteAPagar = totalComEntrega - totalJaPago
+
+  const pagamentoDinheiro = pagamentos.find(p => p.forma === 'dinheiro')
+  const temPagamentoDinheiro = pagamentoDinheiro !== undefined
+
+  const trocoCalculado = precisaDeTroco && temPagamentoDinheiro && typeof valorPagoEmDinheiro === 'number'
+    ? valorPagoEmDinheiro - (pagamentoDinheiro?.valor ?? 0)
     : null
 
-  const atalhosTroco = [20, 50, 100, 200].filter(valor => valor >= totalComEntrega)
+  const atalhosTroco = [20, 50, 100, 200].filter(valor => pagamentoDinheiro && valor >= (pagamentoDinheiro.valor ?? 0))
 
-  const alterarFormaPagamento = (novaForma: FormaPagamento | '') => {
-    setFormaPagamento(novaForma)
-    if (novaForma !== 'dinheiro') {
-      setPrecisaDeTroco(false)
-      setValorPagoEmDinheiro('')
-    }
+  const adicionarPagamento = () => {
+    if (!novaFormaPagamento) return
+    const valorFinal = typeof novoValorPagamento === 'number' && novoValorPagamento > 0
+      ? novoValorPagamento
+      : Math.max(0, valorRestanteAPagar)
+    if (valorFinal <= 0) return
+    setPagamentos(anterior => [...anterior, { forma: novaFormaPagamento as FormaPagamento, valor: valorFinal }])
+    setNovaFormaPagamento('')
+    setNovoValorPagamento('')
+  }
+
+  const removerPagamento = (indice: number) => {
+    setPagamentos(anterior => anterior.filter((_, i) => i !== indice))
+    if (pagamentos[indice]?.forma !== 'dinheiro') return
+    setPrecisaDeTroco(false)
+    setValorPagoEmDinheiro('')
   }
 
   const adicionarItemAoPedido = () => {
@@ -349,9 +374,11 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
     setSalvando(true)
     setErro(null)
     try {
+      const primeiroPagamento = pagamentos[0] ?? null
       await onSalvar({
         ...dadosCliente,
-        forma_pagamento: formaPagamento === '' ? null : formaPagamento,
+        pagamentos,
+        forma_pagamento: primeiroPagamento ? primeiroPagamento.forma : null,
         itens: itensDoPedido,
         total: totalComEntrega,
         taxa_entrega: taxaEntregaFinal,
@@ -543,16 +570,66 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                 Pagamento
               </Typography>
             </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
+
+            {pagamentos.length > 0 && (
+              <Grid size={12}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {pagamentos.map((pagamento, indice) => (
+                    <Box
+                      key={indice}
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        px: 2,
+                        py: 1,
+                        borderRadius: '8px',
+                        bgcolor: 'action.hover',
+                        border: '1px solid',
+                        borderColor: 'divider',
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ textTransform: 'capitalize', flex: 1 }}>
+                        {pagamento.forma}
+                      </Typography>
+                      <Typography variant="body2" fontWeight={600} color="primary.main">
+                        R$ {pagamento.valor.toFixed(2).replace('.', ',')}
+                      </Typography>
+                      <IconButton size="small" color="error" onClick={() => removerPagamento(indice)}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  ))}
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', px: 1 }}>
+                    <Typography variant="body2" color="text.secondary">
+                      Total pago: R$ {totalJaPago.toFixed(2).replace('.', ',')}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      fontWeight={600}
+                      color={valorRestanteAPagar > 0.001 ? 'warning.main' : 'success.main'}
+                    >
+                      {valorRestanteAPagar > 0.001
+                        ? `Falta: R$ ${valorRestanteAPagar.toFixed(2).replace('.', ',')}`
+                        : valorRestanteAPagar < -0.001
+                          ? `Excedente: R$ ${Math.abs(valorRestanteAPagar).toFixed(2).replace('.', ',')}`
+                          : 'Valor quitado ✓'}
+                    </Typography>
+                  </Box>
+                </Box>
+              </Grid>
+            )}
+
+            <Grid size={{ xs: 12, sm: 5 }}>
               <FormControl fullWidth>
                 <InputLabel>Forma de Pagamento</InputLabel>
                 <Select
-                  value={formaPagamento}
+                  value={novaFormaPagamento}
                   label="Forma de Pagamento"
-                  onChange={(e) => alterarFormaPagamento(e.target.value as FormaPagamento | '')}
+                  onChange={(e) => setNovaFormaPagamento(e.target.value as FormaPagamento | '')}
                 >
                   <MenuItem value="">
-                    <Typography variant="body2" color="text.secondary">Não informado</Typography>
+                    <Typography variant="body2" color="text.secondary">Selecione...</Typography>
                   </MenuItem>
                   {todasFormasPagamento.map((forma) => (
                     <MenuItem key={forma} value={forma} sx={{ textTransform: 'capitalize' }}>
@@ -562,8 +639,36 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                 </Select>
               </FormControl>
             </Grid>
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                fullWidth
+                label="Valor (R$)"
+                type="number"
+                inputProps={{ min: 0, step: '0.01' }}
+                value={novoValorPagamento}
+                placeholder={valorRestanteAPagar > 0 ? valorRestanteAPagar.toFixed(2) : '0,00'}
+                onChange={(e) => setNovoValorPagamento(parseFloat(e.target.value) || '')}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                  },
+                }}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 3 }}>
+              <Button
+                fullWidth
+                variant="outlined"
+                startIcon={<AddIcon />}
+                onClick={adicionarPagamento}
+                disabled={!novaFormaPagamento}
+                sx={{ height: '56px', borderRadius: '8px' }}
+              >
+                Adicionar
+              </Button>
+            </Grid>
 
-            {pagamentoEhDinheiro && (
+            {temPagamentoDinheiro && (
               <>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <FormControlLabel
@@ -596,7 +701,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                         ))}
                       </Box>
                       <TextField
-                        label="Valor pago"
+                        label="Valor pago em dinheiro"
                         type="number"
                         inputProps={{ min: 0, step: '0.01' }}
                         value={valorPagoEmDinheiro}

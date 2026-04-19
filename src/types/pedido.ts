@@ -32,6 +32,11 @@ export const todasFormasPagamento: FormaPagamento[] = [
   'cartão de débito',
 ]
 
+export type PagamentoParcial = {
+  forma: FormaPagamento
+  valor: number
+}
+
 export type ItemPedido = {
   id: string
   nome: string
@@ -45,6 +50,7 @@ export type Pedido = {
   itens: ItemPedido[]
   total: number
   status: StatusPedido
+  pagamentos: PagamentoParcial[]
   forma_pagamento: FormaPagamento | null
   nome_cliente: string
   telefone_cliente: string
@@ -58,6 +64,7 @@ export type EdicaoPedido = {
   status?: StatusPedido
   itens?: ItemPedido[]
   total?: number
+  pagamentos?: PagamentoParcial[]
   forma_pagamento?: FormaPagamento | null
   taxa_entrega?: number
   criado_em?: string

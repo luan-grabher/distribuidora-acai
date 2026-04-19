@@ -31,8 +31,8 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import CabecalhoPagina from '../CabecalhoPagina'
 import { usePedidosAdmin } from '@/hooks/usePedidosAdmin'
 import { useFiltrosPedidos } from '@/hooks/useFiltrosPedidos'
-import type { Pedido, StatusPedido, FormaPagamento, NovoPedido, EdicaoPedido } from '@/types/pedido'
-import { todosStatusPedido, todasFormasPagamento } from '@/types/pedido'
+import type { Pedido, StatusPedido, NovoPedido, EdicaoPedido } from '@/types/pedido'
+import { todosStatusPedido } from '@/types/pedido'
 import FormularioPedido from './FormularioPedido'
 import FiltrosPedidosComponent from './FiltrosPedidos'
 
@@ -62,15 +62,6 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover, onEditar }: PropsLinh
     setAtualizando(true)
     try {
       await onAtualizar(pedido.id, { status: novoStatus })
-    } finally {
-      setAtualizando(false)
-    }
-  }
-
-  const handleFormaPagamento = async (novaForma: FormaPagamento | '') => {
-    setAtualizando(true)
-    try {
-      await onAtualizar(pedido.id, { forma_pagamento: novaForma === '' ? null : novaForma })
     } finally {
       setAtualizando(false)
     }
@@ -143,27 +134,24 @@ function LinhaExpandivel({ pedido, onAtualizar, onRemover, onEditar }: PropsLinh
           </FormControl>
         </TableCell>
         <TableCell>
-          <FormControl size="small" disabled={atualizando} sx={{ minWidth: 180 }}>
-            <Select
-              value={pedido.forma_pagamento ?? ''}
-              onChange={(e) => handleFormaPagamento(e.target.value as FormaPagamento | '')}
-              displayEmpty
-              renderValue={(valor) =>
-                valor
-                  ? <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>{valor}</Typography>
-                  : <Typography variant="body2" color="text.disabled">Não informado</Typography>
-              }
-            >
-              <MenuItem value="">
-                <Typography variant="body2" color="text.secondary">Não informado</Typography>
-              </MenuItem>
-              {todasFormasPagamento.map((forma) => (
-                <MenuItem key={forma} value={forma} sx={{ textTransform: 'capitalize' }}>
-                  {forma}
-                </MenuItem>
+          {pedido.pagamentos?.length > 0 ? (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+              {pedido.pagamentos.map((pagamento, indice) => (
+                <Box key={indice} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                    {pagamento.forma}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    R$ {pagamento.valor.toFixed(2).replace('.', ',')}
+                  </Typography>
+                </Box>
               ))}
-            </Select>
-          </FormControl>
+            </Box>
+          ) : pedido.forma_pagamento ? (
+            <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>{pedido.forma_pagamento}</Typography>
+          ) : (
+            <Typography variant="body2" color="text.disabled">Não informado</Typography>
+          )}
         </TableCell>
         <TableCell align="right">
           <IconButton
@@ -270,6 +258,7 @@ export default function ListaPedidos() {
     await atualizarPedido(pedidoParaEditar.id, {
       itens: dados.itens,
       total: dados.total,
+      pagamentos: dados.pagamentos,
       forma_pagamento: dados.forma_pagamento,
       taxa_entrega: dados.taxa_entrega,
       criado_em: dados.criado_em,
