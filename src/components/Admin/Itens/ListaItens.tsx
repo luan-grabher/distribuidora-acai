@@ -183,7 +183,7 @@ export default function ListaItens() {
         onSalvar={handleSalvar}
       />
 
-      <Dialog open={idParaExcluir !== null} onClose={() => setIdParaExcluir(null)} PaperProps={{ sx: { borderRadius: '16px' } }}>
+      <Dialog open={idParaExcluir !== null} onClose={() => setIdParaExcluir(null)} PaperProps={{ sx: { borderRadius: { xs: '8px', sm: '16px' }, margin: { xs: 1, sm: 3 }, width: '100%' } }}>
         <DialogTitle fontWeight={700}>Confirmar Exclusão</DialogTitle>
         <DialogContent>
           <DialogContentText>

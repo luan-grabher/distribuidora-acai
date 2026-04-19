@@ -69,7 +69,7 @@ export default function ConfirmWhatsAppDialog({ open, onClose, onConfirm }: Prop
   }
 
   return (
-    <Dialog open={open} onClose={onClose} PaperProps={{ sx: { borderRadius: '16px', maxWidth: 420, width: '100%' } }}>
+    <Dialog open={open} onClose={onClose} PaperProps={{ sx: { borderRadius: { xs: '8px', sm: '16px' }, maxWidth: 420, width: '100%', margin: { xs: 1, sm: 3 } } }}>
       <DialogTitle fontWeight={700}>Finalizar Pedido</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 1 }}>
