@@ -192,8 +192,9 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   }
 
   const removerPagamento = (indice: number) => {
+    const pagamentoRemovido = pagamentos[indice]
     setPagamentos(anterior => anterior.filter((_, i) => i !== indice))
-    if (pagamentos[indice]?.forma !== 'dinheiro') return
+    if (pagamentoRemovido?.forma !== 'dinheiro') return
     setPrecisaDeTroco(false)
     setValorPagoEmDinheiro('')
   }
@@ -701,7 +702,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                         ))}
                       </Box>
                       <TextField
-                        label="Valor pago em dinheiro"
+                        label="Valor entregue em dinheiro"
                         type="number"
                         inputProps={{ min: 0, step: '0.01' }}
                         value={valorPagoEmDinheiro}

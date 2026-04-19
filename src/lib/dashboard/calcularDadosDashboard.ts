@@ -77,10 +77,14 @@ function calcularVendasPorFormaPagamento(pedidos: Pedido[]): VendaPorFormaPagame
       continue
     }
 
+    const formasNestePedido = new Set<string>()
     for (const pagamento of pagamentos) {
       const chave = pagamento.forma
       if (!agrupado[chave]) agrupado[chave] = { quantidade: 0, total: 0 }
-      agrupado[chave].quantidade += 1
+      if (!formasNestePedido.has(chave)) {
+        agrupado[chave].quantidade += 1
+        formasNestePedido.add(chave)
+      }
       agrupado[chave].total += pagamento.valor
     }
   }
