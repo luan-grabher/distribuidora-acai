@@ -34,9 +34,7 @@ import BarcodeReaderIcon from '@mui/icons-material/BarcodeReader'
 import type { NovoPedido, ItemPedido, FormaPagamento, PagamentoParcial, Pedido, StatusPedido } from '@/types/pedido'
 import { todasFormasPagamento, todosStatusPedido, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
 import type { Item } from '@/types/item'
-
-const normalizarTextoParaBusca = (texto: string) =>
-  texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+import { normalizarTextoParaBusca } from '@/lib/texto/normalizarTextoParaBusca'
 
 type PropsFormularioPedido = {
   aberto: boolean
@@ -455,11 +453,11 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                     getOptionLabel={(item) => item.nome}
                     isOptionEqualToValue={(option, value) => option.id === value.id}
                     filterOptions={(options, { inputValue }) => {
-                      const termos = normalizarTextoParaBusca(inputValue).split(/\s+/).filter(Boolean)
-                      if (termos.length === 0) return options
+                      const termosNormalizadosDaBusca = normalizarTextoParaBusca(inputValue).split(/\s+/).filter(Boolean)
+                      if (termosNormalizadosDaBusca.length === 0) return options
                       return options.filter(item => {
                         const nomeNormalizado = normalizarTextoParaBusca(item.nome)
-                        return termos.every(termo => nomeNormalizado.includes(termo))
+                        return termosNormalizadosDaBusca.every(termo => nomeNormalizado.includes(termo))
                       })
                     }}
                     onChange={(_, novoItem) => {
