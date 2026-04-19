@@ -63,12 +63,30 @@ function calcularVendasPorFormaPagamento(pedidos: Pedido[]): VendaPorFormaPagame
   const agrupado: Record<string, { quantidade: number; total: number }> = {}
 
   for (const pedido of pedidos) {
-    const chave = pedido.forma_pagamento ?? 'não informado'
-    if (!agrupado[chave]) {
-      agrupado[chave] = { quantidade: 0, total: 0 }
+    const pagamentos = pedido.pagamentos?.length > 0
+      ? pedido.pagamentos
+      : pedido.forma_pagamento
+        ? [{ forma: pedido.forma_pagamento, valor: pedido.total }]
+        : null
+
+    if (!pagamentos) {
+      const chave = 'não informado'
+      if (!agrupado[chave]) agrupado[chave] = { quantidade: 0, total: 0 }
+      agrupado[chave].quantidade += 1
+      agrupado[chave].total += pedido.total
+      continue
     }
-    agrupado[chave].quantidade += 1
-    agrupado[chave].total += pedido.total
+
+    const formasNestePedido = new Set<string>()
+    for (const pagamento of pagamentos) {
+      const chave = pagamento.forma
+      if (!agrupado[chave]) agrupado[chave] = { quantidade: 0, total: 0 }
+      if (!formasNestePedido.has(chave)) {
+        agrupado[chave].quantidade += 1
+        formasNestePedido.add(chave)
+      }
+      agrupado[chave].total += pagamento.valor
+    }
   }
 
   return Object.entries(agrupado)
