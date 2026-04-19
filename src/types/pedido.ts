@@ -58,7 +58,7 @@ export type Pedido = {
   taxa_entrega: number
 }
 
-export type NovoPedido = Omit<Pedido, 'id' | 'status' | 'criado_em'> & { criado_em?: string }
+export type NovoPedido = Omit<Pedido, 'id' | 'status' | 'criado_em'> & { status?: StatusPedido; criado_em?: string }
 
 export type EdicaoPedido = {
   status?: StatusPedido

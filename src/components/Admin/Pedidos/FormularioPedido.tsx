@@ -27,12 +27,16 @@ import Switch from '@mui/material/Switch'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Chip from '@mui/material/Chip'
 import InputAdornment from '@mui/material/InputAdornment'
+import Autocomplete from '@mui/material/Autocomplete'
 import DeleteIcon from '@mui/icons-material/Delete'
 import AddIcon from '@mui/icons-material/Add'
 import BarcodeReaderIcon from '@mui/icons-material/BarcodeReader'
-import type { NovoPedido, ItemPedido, FormaPagamento, PagamentoParcial, Pedido } from '@/types/pedido'
-import { todasFormasPagamento, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
+import type { NovoPedido, ItemPedido, FormaPagamento, PagamentoParcial, Pedido, StatusPedido } from '@/types/pedido'
+import { todasFormasPagamento, todosStatusPedido, TAXA_ENTREGA_PADRAO } from '@/types/pedido'
 import type { Item } from '@/types/item'
+
+const normalizarTextoParaBusca = (texto: string) =>
+  texto.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 
 type PropsFormularioPedido = {
   aberto: boolean
@@ -60,11 +64,12 @@ const isoParaInputDatetime = (isoString: string): string => {
 export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoParaEditar }: PropsFormularioPedido) {
   const [dadosCliente, setDadosCliente] = useState(dadosClienteIniciais)
   const [dataPedido, setDataPedido] = useState(obterDataAtualParaCampoDatetime)
+  const [statusPedido, setStatusPedido] = useState<StatusPedido>('concluído')
   const [pagamentos, setPagamentos] = useState<PagamentoParcial[]>([])
   const [novaFormaPagamento, setNovaFormaPagamento] = useState<FormaPagamento | ''>('')
   const [novoValorPagamento, setNovoValorPagamento] = useState<number | ''>('')
   const [itensCatalogo, setItensCatalogo] = useState<Item[]>([])
-  const [itemSelecionadoId, setItemSelecionadoId] = useState('')
+  const [itemSelecionado, setItemSelecionado] = useState<Item | null>(null)
   const [precoItemSelecionado, setPrecoItemSelecionado] = useState<number | ''>('')
   const [quantidadeItemSelecionado, setQuantidadeItemSelecionado] = useState(1)
   const [itensDoPedido, setItensDoPedido] = useState<ItemPedido[]>([])
@@ -76,7 +81,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   const [carregandoItens, setCarregandoItens] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
-  const refContainerSelectProduto = useRef<HTMLDivElement>(null)
+  const refInputProduto = useRef<HTMLInputElement>(null)
   const refInputQuantidade = useRef<HTMLInputElement>(null)
   const timerResetSessaoDigitacaoRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const emSessaoDigitacaoQuantidadeRef = useRef(false)
@@ -105,7 +110,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   }, [])
 
   const focarSelectProduto = useCallback(() => {
-    refContainerSelectProduto.current?.querySelector<HTMLElement>('[tabindex="0"]')?.focus()
+    refInputProduto.current?.focus()
   }, [])
 
   const reiniciarSessaoDigitacaoQuantidade = useCallback(() => {
@@ -119,6 +124,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       if (pedidoParaEditar) {
         setDadosCliente({ nome_cliente: pedidoParaEditar.nome_cliente, telefone_cliente: pedidoParaEditar.telefone_cliente })
         setDataPedido(isoParaInputDatetime(pedidoParaEditar.criado_em))
+        setStatusPedido(pedidoParaEditar.status)
         setPagamentos(
           pedidoParaEditar.pagamentos?.length > 0
             ? pedidoParaEditar.pagamentos
@@ -133,6 +139,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       } else {
         setDadosCliente(dadosClienteIniciais)
         setDataPedido(obterDataAtualParaCampoDatetime())
+        setStatusPedido('concluído')
         setPagamentos([])
         setItensDoPedido([])
         setTeleEntrega(false)
@@ -142,7 +149,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       setNovoValorPagamento('')
       setPrecisaDeTroco(false)
       setValorPagoEmDinheiro('')
-      setItemSelecionadoId('')
+      setItemSelecionado(null)
       setPrecoItemSelecionado('')
       setQuantidadeItemSelecionado(1)
       setErro(null)
@@ -200,14 +207,13 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   }
 
   const adicionarItemAoPedido = () => {
-    const itemCatalogo = itensCatalogo.find(i => i.id === itemSelecionadoId)
-    if (!itemCatalogo) return
+    if (!itemSelecionado) return
 
     const precoFinal = typeof precoItemSelecionado === 'number' && precoItemSelecionado > 0
       ? precoItemSelecionado
-      : itemCatalogo.preco
+      : itemSelecionado.preco
 
-    const indiceExistente = itensDoPedido.findIndex(i => i.id === itemSelecionadoId)
+    const indiceExistente = itensDoPedido.findIndex(i => i.id === itemSelecionado.id)
     if (indiceExistente >= 0) {
       setItensDoPedido(anterior => anterior.map((item, index) => {
         if (index !== indiceExistente) return item
@@ -216,8 +222,8 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       }))
     } else {
       const novoItem: ItemPedido = {
-        id: itemCatalogo.id,
-        nome: itemCatalogo.nome,
+        id: itemSelecionado.id,
+        nome: itemSelecionado.nome,
         preco: precoFinal,
         quantidade: quantidadeItemSelecionado,
         subtotal: precoFinal * quantidadeItemSelecionado,
@@ -225,7 +231,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       setItensDoPedido(anterior => [...anterior, novoItem])
     }
 
-    setItemSelecionadoId('')
+    setItemSelecionado(null)
     setPrecoItemSelecionado('')
     setQuantidadeItemSelecionado(1)
     reiniciarSessaoDigitacaoQuantidade()
@@ -235,7 +241,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
   const handleKeyDownQuantidade = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault()
-      if (itemSelecionadoId) adicionarItemAoPedido()
+      if (itemSelecionado) adicionarItemAoPedido()
       return
     }
 
@@ -379,6 +385,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
       const primeiroPagamento = pagamentos[0] ?? null
       await onSalvar({
         ...dadosCliente,
+        status: statusPedido,
         pagamentos,
         forma_pagamento: primeiroPagamento ? primeiroPagamento.forma : null,
         itens: itensDoPedido,
@@ -442,31 +449,41 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
             ) : (
               <>
                 <Grid size={{ xs: 12, sm: 5 }}>
-                  <Box ref={refContainerSelectProduto}>
-                    <FormControl fullWidth>
-                      <InputLabel>Produto</InputLabel>
-                      <Select
-                        value={itemSelecionadoId}
+                  <Autocomplete
+                    options={itensCatalogo}
+                    value={itemSelecionado}
+                    getOptionLabel={(item) => item.nome}
+                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                    filterOptions={(options, { inputValue }) => {
+                      const termos = normalizarTextoParaBusca(inputValue).split(/\s+/).filter(Boolean)
+                      if (termos.length === 0) return options
+                      return options.filter(item => {
+                        const nomeNormalizado = normalizarTextoParaBusca(item.nome)
+                        return termos.every(termo => nomeNormalizado.includes(termo))
+                      })
+                    }}
+                    onChange={(_, novoItem) => {
+                      setItemSelecionado(novoItem)
+                      setPrecoItemSelecionado(novoItem ? (novoItem.promocao_ativa ?? novoItem.preco) : '')
+                      if (novoItem) {
+                        reiniciarSessaoDigitacaoQuantidade()
+                        requestAnimationFrame(() => refInputQuantidade.current?.focus())
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
                         label="Produto"
-                        onChange={(e) => {
-                          const id = e.target.value
-                          setItemSelecionadoId(id)
-                          const itemCatalogo = itensCatalogo.find(i => i.id === id)
-                          setPrecoItemSelecionado(itemCatalogo ? (itemCatalogo.promocao_ativa ?? itemCatalogo.preco) : '')
-                          if (id) {
-                            reiniciarSessaoDigitacaoQuantidade()
-                            requestAnimationFrame(() => refInputQuantidade.current?.focus())
-                          }
-                        }}
-                      >
-                        {itensCatalogo.map(item => (
-                          <MenuItem key={item.id} value={item.id}>
-                            {item.nome} — R$ {(item.promocao_ativa ?? item.preco).toFixed(2).replace('.', ',')}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
+                        inputRef={refInputProduto}
+                      />
+                    )}
+                    renderOption={(props, item) => (
+                      <MenuItem {...props} key={item.id}>
+                        {item.nome} — R$ {(item.promocao_ativa ?? item.preco).toFixed(2).replace('.', ',')}
+                      </MenuItem>
+                    )}
+                    noOptionsText="Nenhum produto encontrado"
+                  />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 3 }}>
                   <TextField
@@ -476,7 +493,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                     inputProps={{ min: 0, step: '0.01' }}
                     value={precoItemSelecionado}
                     onChange={(e) => setPrecoItemSelecionado(parseFloat(e.target.value) || '')}
-                    disabled={!itemSelecionadoId}
+                    disabled={!itemSelecionado}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 2 }}>
@@ -497,7 +514,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                     variant="outlined"
                     startIcon={<AddIcon />}
                     onClick={adicionarItemAoPedido}
-                    disabled={!itemSelecionadoId}
+                    disabled={!itemSelecionado}
                     sx={{ height: '56px', borderRadius: '8px' }}
                   >
                     Adicionar
@@ -777,7 +794,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
             <Grid size={12}>
               <Divider sx={{ my: 1 }} />
               <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
-                Data
+                Data e Status
               </Typography>
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
@@ -790,6 +807,22 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                 slotProps={{ inputLabel: { shrink: true } }}
                 required
               />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControl fullWidth>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  value={statusPedido}
+                  label="Status"
+                  onChange={(e) => setStatusPedido(e.target.value as StatusPedido)}
+                >
+                  {todosStatusPedido.map((status) => (
+                    <MenuItem key={status} value={status} sx={{ textTransform: 'capitalize' }}>
+                      {status}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
 
             <Grid size={12}>
