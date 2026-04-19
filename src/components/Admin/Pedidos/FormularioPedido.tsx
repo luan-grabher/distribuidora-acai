@@ -274,12 +274,13 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
           return { ...item, quantidade: novaQuantidade, subtotal: item.preco * novaQuantidade }
         })
       }
+      const precoAplicado = itemCatalogo.promocao_ativa ?? itemCatalogo.preco
       const novoItem: ItemPedido = {
         id: itemCatalogo.id,
         nome: itemCatalogo.nome,
-        preco: itemCatalogo.preco,
+        preco: precoAplicado,
         quantidade: 1,
-        subtotal: itemCatalogo.preco,
+        subtotal: precoAplicado,
       }
       return [...anterior, novoItem]
     })
@@ -451,7 +452,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                           const id = e.target.value
                           setItemSelecionadoId(id)
                           const itemCatalogo = itensCatalogo.find(i => i.id === id)
-                          setPrecoItemSelecionado(itemCatalogo ? itemCatalogo.preco : '')
+                          setPrecoItemSelecionado(itemCatalogo ? (itemCatalogo.promocao_ativa ?? itemCatalogo.preco) : '')
                           if (id) {
                             reiniciarSessaoDigitacaoQuantidade()
                             requestAnimationFrame(() => refInputQuantidade.current?.focus())
@@ -460,7 +461,7 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                       >
                         {itensCatalogo.map(item => (
                           <MenuItem key={item.id} value={item.id}>
-                            {item.nome} — R$ {item.preco.toFixed(2).replace('.', ',')}
+                            {item.nome} — R$ {(item.promocao_ativa ?? item.preco).toFixed(2).replace('.', ',')}
                           </MenuItem>
                         ))}
                       </Select>
@@ -562,6 +563,37 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                     </TableRow>
                   </TableBody>
                 </Table>
+              </Grid>
+            )}
+
+            <Grid size={12}>
+              <Divider sx={{ my: 1 }} />
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Entrega
+              </Typography>
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={teleEntrega}
+                    onChange={(e) => setTeleEntrega(e.target.checked)}
+                    color="primary"
+                  />
+                }
+                label="Tele-entrega"
+              />
+            </Grid>
+            {teleEntrega && (
+              <Grid size={{ xs: 12, sm: 6 }}>
+                <TextField
+                  fullWidth
+                  label="Taxa de Entrega (R$)"
+                  type="number"
+                  inputProps={{ min: 0, step: '0.01' }}
+                  value={taxaEntrega}
+                  onChange={(e) => setTaxaEntrega(parseFloat(e.target.value) || 0)}
+                />
               </Grid>
             )}
 
@@ -759,37 +791,6 @@ export default function FormularioPedido({ aberto, onFechar, onSalvar, pedidoPar
                 required
               />
             </Grid>
-
-            <Grid size={12}>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
-                Entrega
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={teleEntrega}
-                    onChange={(e) => setTeleEntrega(e.target.checked)}
-                    color="primary"
-                  />
-                }
-                label="Tele-entrega"
-              />
-            </Grid>
-            {teleEntrega && (
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  fullWidth
-                  label="Taxa de Entrega (R$)"
-                  type="number"
-                  inputProps={{ min: 0, step: '0.01' }}
-                  value={taxaEntrega}
-                  onChange={(e) => setTaxaEntrega(parseFloat(e.target.value) || 0)}
-                />
-              </Grid>
-            )}
 
             <Grid size={12}>
               <Divider sx={{ my: 1 }} />
