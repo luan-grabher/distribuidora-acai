@@ -141,9 +141,20 @@ export default function ListaItens() {
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <Typography fontWeight={600} color="primary">
-                    R$ {item.preco.toFixed(2).replace('.', ',')}
-                  </Typography>
+                  {item.promocao_ativa != null ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ textDecoration: 'line-through', lineHeight: 1 }}>
+                        R$ {item.preco.toFixed(2).replace('.', ',')}
+                      </Typography>
+                      <Typography fontWeight={600} color="error">
+                        R$ {item.promocao_ativa.toFixed(2).replace('.', ',')}
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Typography fontWeight={600} color="primary">
+                      R$ {item.preco.toFixed(2).replace('.', ',')}
+                    </Typography>
+                  )}
                 </TableCell>
                 <TableCell>{item.estoque}</TableCell>
                 <TableCell>
