@@ -248,6 +248,18 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
             <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 fullWidth
+                label="Promoção Ativa (R$)"
+                type="number"
+                inputProps={{ min: 0, step: 0.01 }}
+                value={dados.promocao_ativa != null ? dados.promocao_ativa : ''}
+                onChange={(e) => handleChange('promocao_ativa', e.target.value ? parseFloat(e.target.value) : null)}
+                placeholder="Deixe vazio para desativar"
+                helperText={dados.promocao_ativa != null ? 'Preço original será exibido riscado no catálogo' : 'Sem promoção ativa'}
+              />
+            </Grid>
+            <Grid size={{ xs: 12, sm: 6 }}>
+              <TextField
+                fullWidth
                 label="Custo (R$)"
                 type="number"
                 inputProps={{ min: 0, step: 0.01 }}
@@ -266,18 +278,6 @@ export default function FormularioItem({ aberto, onFechar, itemEdicao, onSalvar 
                 value={dados.estoque}
                 onChange={(e) => handleChange('estoque', parseInt(e.target.value) || 0)}
                 required
-              />
-            </Grid>
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                fullWidth
-                label="Promoção Ativa (R$)"
-                type="number"
-                inputProps={{ min: 0, step: 0.01 }}
-                value={dados.promocao_ativa != null ? dados.promocao_ativa : ''}
-                onChange={(e) => handleChange('promocao_ativa', e.target.value ? parseFloat(e.target.value) : null)}
-                placeholder="Deixe vazio para desativar"
-                helperText={dados.promocao_ativa != null ? 'Preço original será exibido riscado no catálogo' : 'Sem promoção ativa'}
               />
             </Grid>
             <Grid size={12}>
