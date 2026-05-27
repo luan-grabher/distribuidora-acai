@@ -19,14 +19,12 @@ type ContactModalProps = {
 
 export function ContactModal({ open, onClose }: ContactModalProps) {
   const [nome, setNome] = useState('')
-  const [empresa, setEmpresa] = useState('')
-  const [telefone, setTelefone] = useState('')
   const [cidade, setCidade] = useState('')
 
-  const isValid = nome.trim() !== '' && telefone.trim() !== ''
+  const isValid = nome.trim() !== '' && cidade.trim() !== ''
 
   const handleSubmit = () => {
-    const mensagem = `Olá, sou *${nome.trim()}*${empresa ? ` da empresa *${empresa.trim()}*` : ''} e tenho interesse em revender seus produtos.\nTelefone: ${telefone.trim()}\nCidade: ${cidade.trim()}`
+    const mensagem = `Olá, sou *${nome.trim()}*, da cidade de *${cidade.trim()}* e tenho interesse em revender seus produtos.`
     const url = gerarUrlWhatsapp(siteConfig.company.whatsapp, mensagem)
     window.open(url, '_blank')
     onClose()
@@ -34,12 +32,10 @@ export function ContactModal({ open, onClose }: ContactModalProps) {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Quero revender</DialogTitle>
+      <DialogTitle>Preencha o formulário para montar sua mensagem</DialogTitle>
       <DialogContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
           <TextField label="Nome" value={nome} onChange={(e) => setNome(e.target.value)} fullWidth required />
-          <TextField label="Empresa (opcional)" value={empresa} onChange={(e) => setEmpresa(e.target.value)} fullWidth />
-          <TextField label="Telefone" value={telefone} onChange={(e) => setTelefone(e.target.value)} fullWidth required placeholder="(51) 99999-9999" />
           <TextField label="Cidade" value={cidade} onChange={(e) => setCidade(e.target.value)} fullWidth />
           <Typography variant="caption" sx={{ color: 'text.secondary' }}>
             Ao enviar, abriremos o WhatsApp com a sua mensagem pronta.

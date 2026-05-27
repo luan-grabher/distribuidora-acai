@@ -44,9 +44,9 @@ export const siteConfig = {
         titleHighlight: "para Açaiterias e Restaurantes",
         subtitle: "Açaí de qualidade, preços competitivos e entrega rápida em <strong>Porto Alegre e região</strong>.",
         ctaText: "Quero revender",
-        ctaSecondaryText: "Receber catálogo",
+        ctaSecondaryText: "Ver catálogo",
         image: "/assets/reform/hero-estoque.jpg",
-        catalogUrl: "/assets/reform/catalogo.pdf",
+        catalogUrl: "/catalogo",
     },
     about: {
         overline: "Quem Somos",
