@@ -14,9 +14,9 @@ export default function Home() {
     <>
       <Header />
       <main>
-        <Hero />
-        <B2BSection />
+        <Hero />        
         <Products />
+        <B2BSection />
         <OperationalProof />
         <Benefits />
         <Address />
