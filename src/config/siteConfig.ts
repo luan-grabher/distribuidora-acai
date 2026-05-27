@@ -3,9 +3,8 @@ export const siteConfig = {
     company: {
         name: "Miquinho Distribuidora",
         tagline: "Fornecimento B2B de açaí, sorvetes e insumos",
-        description:
-            "Fornecemos açaí, sorvetes e insumos para revenda com logística ágil e preços competitivos. Entregas em Porto Alegre em até 24h.",
-        shortDescription: "Fornecedor B2B: qualidade consistente, entrega rápida e condições comerciais para revenda.",
+        description: "Fornecemos açaí, sorvetes e insumos para açaiterias e restaurantes de Porto Alegre, Alvorada e região. Com produção própria, garantimos qualidade, preço competitivo e entregas rápidas para o seu negócio.",
+        shortDescription: "Fornecedor de açaí e sorvetes em Porto Alegre, Alvorada e Viamão.",
         whatsapp: "+55 (51) 99493-0575",
         whatsappE164: "+55-51-99493-0575",
         email: "contato@miquinho.com.br",
