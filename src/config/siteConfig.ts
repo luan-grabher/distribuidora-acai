@@ -84,17 +84,26 @@ export const siteConfig = {
                 description:
                     "Açaí já preparado com a cremosidade ideal, pronto para servir. A escolha certa para quem busca praticidade sem abrir mão da qualidade.",
                 emoji: "🫐",
+                category: "acai",
+                categoryLabel: "Açaí",
+                image: "/assets/reform/produto-acai-1.jpeg",
             },
             {
                 name: "Leite Condensado",
                 description: "Leite condensado de alta qualidade para adoçar e enriquecer seus açaís. Embalagem prática para uso profissional.",
                 emoji: "🥛",
+                category: "complementos",
+                categoryLabel: "Complementos",
+                image: "/assets/reform/produto-sorvete-1.jpeg",
             },
             {
                 name: "Embalagens e Utensílios",
                 description:
                     "Linha completa de potes, copos, tampas e colheres descartáveis, ideais para servir açaí e acompanhamentos. Produtos resistentes, padronizados e prontos para o uso profissional no dia a dia da sua açaiteria.",
                 emoji: "🥄",
+                category: "embalagens",
+                categoryLabel: "Embalagens",
+                image: "/assets/reform/embalagens-1.jpg",
             },
             //{ name: 'Açaí Polpa Premium', description: 'Polpa pura e cremosa, ideal para servir com frutas e complementos. Textura perfeita e sabor intenso da Amazônia.', emoji: '🫐' },
             //{ name: 'Açaí com Frutas', description: 'Blend especial com frutas selecionadas. Morango, banana e outras frutas tropicais que complementam o sabor único do açaí.', emoji: '🍓' },
