@@ -41,7 +41,7 @@ export const siteConfig = {
     hero: {
         title: "Seu fornecedor de Açaí e Sorvetes",
         titleHighlight: "para Açaiterias e Restaurantes",
-        subtitle: "Produtos para revenda com qualidade e entrega em 24h em <strong>Porto Alegre e região</strong>.",
+        subtitle: "Produtos para revenda com qualidade e entrega rápida em <strong>Porto Alegre e região</strong>.",
         ctaText: "Quero revender",
         ctaSecondaryText: "Ver catálogo",
         image: "/assets/reform/hero-estoque.jpg",
@@ -130,8 +130,8 @@ export const siteConfig = {
             {
                 icon: "LocalShipping",
                 title: "Entrega rápida",
-                description: "Logística local com entregas em até 24 horas em Porto Alegre.",
-                stat: "24h",
+                description: "Logística local com entregas em Porto Alegre, Alvorada e Viamão.",
+                stat: "Entrega Garantida",
             }
         ],
     },

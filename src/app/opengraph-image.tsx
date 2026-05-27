@@ -27,10 +27,10 @@ export default function ogImage() {
           🫐 {siteConfig.company.name}
         </div>
         <div style={{ fontSize: 34, marginTop: 28, opacity: 0.9, textAlign: 'center' }}>
-          Açaí Premium para Açaiterias — Porto Alegre
+          Fornecedor de Açaí e Sorvetes para Açaiterias e Restaurantes
         </div>
         <div style={{ fontSize: 24, marginTop: 20, opacity: 0.75, textAlign: 'center' }}>
-          Produtor direto · Entrega em 24h · 40+ açaiterias atendidas
+          Entrega rápida em Porto Alegre, Alvorada e Viamão.
         </div>
       </div>
     ),

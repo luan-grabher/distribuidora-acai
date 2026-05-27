@@ -88,7 +88,7 @@ export default function Address() {
               </Typography>
 
               <Typography variant="body2" sx={{ color: siteConfig.colors.text, opacity: 0.8 }}>
-                Atendemos várias cidades da região metropolitana. Porto Alegre e Alvorada com entrega em até 24h.
+                Atendemos várias nas cidades de Porto Alegre, Alvorada e Viamão.
               </Typography>
 
               <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.25, mt: 2 }}>
