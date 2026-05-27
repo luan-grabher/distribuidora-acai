@@ -1,3 +1,7 @@
+---description: Este arquivo descreve os padrões de código para o projeto.
+applyTo: **/*.ts
+---
+
 Não faça comentários pois polui o código, se necessário utilize frases no nome de variáveis ou funções para explicar o que o código faz. Prefira uma variavel com nome com 50 caractres do que um comentário explicando o que a variável faz.
 
 Não use console.log, se você ver algum console.log remova-o.
