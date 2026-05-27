@@ -78,7 +78,7 @@ export const siteConfig = {
                 price: "R$ 10,00",
                 category: "sorvetes",
                 categoryLabel: "Sorvetes",
-                image: "/assets/reform/produto-sorvete-1.jpeg",
+                image: "/assets/reform/sorvetes-1-de-cima.jpeg",
             },
             {
                 name: "Leite em pó 1kg",
