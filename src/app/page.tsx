@@ -1,6 +1,6 @@
 import Header from '@/components/Header/Header'
 import Hero from '@/components/Hero/Hero'
-import Products from '@/components/Products/Products'
+import { Products } from '@/components/Products/Products'
 import Benefits from '@/components/Benefits/Benefits'
 import { B2BSection } from '@/components/B2B/B2BSection'
 import { OperationalProof } from '@/components/Proof/OperationalProof'

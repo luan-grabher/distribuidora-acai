@@ -71,7 +71,7 @@ export const siteConfig = {
                 price: "R$ 50,00",
                 category: "acai",
                 categoryLabel: "Açaí",
-                image: "/assets/reform/produto-acai-1.jpeg",
+                image: "/assets/reform/produto-acai-1.webp",
             },
             {
                 name: "Sorvetes 1L",

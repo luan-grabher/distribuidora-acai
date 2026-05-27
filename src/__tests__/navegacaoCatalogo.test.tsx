@@ -22,7 +22,7 @@ vi.mock('next/image', () => ({
 import Header from '@/components/Header/Header'
 import Contact from '@/components/Contact/Contact'
 import Hero from '@/components/Hero/Hero'
-import Products from '@/components/Products/Products'
+import { Products } from '@/components/Products/Products'
 import { siteConfig } from '@/config/siteConfig'
 
 describe('Botões de navegação para o catálogo', () => {
