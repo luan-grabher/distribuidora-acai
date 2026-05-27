@@ -1,34 +1,45 @@
-'use client'
+"use client"
 
+import React, { useState } from 'react'
 import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import Image from 'next/image'
 import { siteConfig } from '@/config/siteConfig'
+import { ContactModal } from '@/components/ContactModal/ContactModal'
 
 export default function Hero() {
+  const [openModal, setOpenModal] = useState(false)
+
   const handleCTAClick = () => {
-    const element = document.querySelector('#contact')
-    if (element) element.scrollIntoView({ behavior: 'smooth' })
+    setOpenModal(true)
   }
 
   const handleSecondaryClick = () => {
-    const element = document.querySelector('#products')
-    if (element) element.scrollIntoView({ behavior: 'smooth' })
+    const url = siteConfig.hero.catalogUrl || siteConfig.nav.catalogoHref
+    if (typeof window !== 'undefined') window.open(url, '_blank')
   }
+
+  const backgroundStyle = siteConfig.hero.image
+    ? {
+        backgroundImage: `linear-gradient(180deg, rgba(10,10,10,0.45), rgba(10,10,10,0.45)), url(${siteConfig.hero.image})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : { background: `linear-gradient(135deg, ${siteConfig.colors.primary} 0%, #6B0099 40%, #3D006B 70%, #1A0030 100%)` }
 
   return (
     <Box
       id="hero"
       sx={{
-        minHeight: '100vh',
-        background: `linear-gradient(135deg, ${siteConfig.colors.primary} 0%, #6B0099 40%, #3D006B 70%, #1A0030 100%)`,
+        minHeight: '80vh',
         display: 'flex',
         alignItems: 'center',
         position: 'relative',
         overflow: 'hidden',
         pt: 8,
+        ...backgroundStyle,
       }}
     >
       <Box
@@ -36,7 +47,7 @@ export default function Hero() {
           position: 'absolute',
           inset: 0,
           pointerEvents: 'none',
-          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(249, 199, 21, 0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(46, 125, 50, 0.1) 0%, transparent 50%)',
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(249, 199, 21, 0.06) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(46, 125, 50, 0.06) 0%, transparent 50%)',
         }}
       />
 
@@ -55,34 +66,32 @@ export default function Hero() {
               variant="h1"
               sx={{
                 color: siteConfig.colors.textLight,
-                fontSize: { xs: '2.5rem', md: '3.5rem', lg: '4.5rem' },
-                lineHeight: 1.1,
+                fontSize: { xs: '2rem', md: '3rem', lg: '4rem' },
+                lineHeight: 1.05,
                 mb: 2,
+                fontWeight: 700,
               }}
             >
               {siteConfig.hero.title}
               <br />
-              <Box
-                component="span"
-                sx={{ color: siteConfig.colors.accent }}
-              >
+              <Box component="span" sx={{ color: siteConfig.colors.accent }}>
                 {siteConfig.hero.titleHighlight}
               </Box>
             </Typography>
 
             <Typography
               variant="h5"
+              component="div"
               sx={{
-                color: 'rgba(255,255,255,0.8)',
+                color: 'rgba(255,255,255,0.9)',
                 fontWeight: 400,
                 mb: 5,
                 lineHeight: 1.6,
-                maxWidth: 520,
+                maxWidth: 560,
                 mx: { xs: 'auto', md: 0 },
               }}
-            >
-              {siteConfig.hero.subtitle}
-            </Typography>
+              dangerouslySetInnerHTML={{ __html: siteConfig.hero.subtitle }}
+            />
 
             <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: { xs: 'center', md: 'flex-start' } }}>
               <Button
@@ -110,12 +119,12 @@ export default function Hero() {
                 size="large"
                 onClick={handleSecondaryClick}
                 sx={{
-                  borderColor: 'rgba(255,255,255,0.5)',
+                  borderColor: 'rgba(255,255,255,0.8)',
                   color: siteConfig.colors.textLight,
                   px: 4,
                   '&:hover': {
                     borderColor: siteConfig.colors.textLight,
-                    background: 'rgba(255,255,255,0.1)',
+                    background: 'rgba(255,255,255,0.06)',
                     transform: 'translateY(-2px)',
                   },
                   transition: 'all 0.3s ease',
@@ -129,7 +138,7 @@ export default function Hero() {
 
           <Box
             sx={{
-              flex: { xs: 'none', md: '0 0 520px' },
+              flex: { xs: 'none', md: '0 0 420px' },
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
@@ -137,21 +146,20 @@ export default function Hero() {
           >
             <Box
               sx={{
-                width: { xs: 300, md: 460 },
-                height: { xs: 300, md: 460 },
+                width: { xs: 260, md: 420 },
+                height: { xs: 260, md: 420 },
                 borderRadius: '50%',
                 overflow: 'hidden',
-                background: 'rgba(255,255,255,0.1)',
-                backdropFilter: 'blur(10px)',
-                border: `3px solid rgba(249, 199, 21, 0.4)`,
+                background: 'rgba(255,255,255,0.06)',
+                backdropFilter: 'blur(6px)',
+                border: `2px solid rgba(255,255,255,0.08)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: `0 0 80px rgba(249, 199, 21, 0.2), 0 0 40px rgba(74, 0, 128, 0.4)`,
               }}
             >
               <Image
-                src={siteConfig.logo.url}
+                src={siteConfig.hero.image || siteConfig.logo.url}
                 alt={siteConfig.logo.alt}
                 width={420}
                 height={420}
@@ -161,6 +169,8 @@ export default function Hero() {
           </Box>
         </Box>
       </Container>
+
+      <ContactModal open={openModal} onClose={() => setOpenModal(false)} />
     </Box>
   )
 }

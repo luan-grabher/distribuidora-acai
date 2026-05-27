@@ -40,11 +40,13 @@ export const siteConfig = {
         catalogoHref: "/catalogo",
     },
     hero: {
-        title: "Do Coração da Amazônia",
-        titleHighlight: "Para Sua Açaiteria",
-        subtitle: "Açaí produzido com paixão e tradição. Qualidade premium direto do produtor para o seu negócio crescer.",
-        ctaText: "Fazer Pedido",
-        ctaSecondaryText: "Conheça Nossos Produtos",
+        title: "Seu fornecedor de Açaí e Sorvetes",
+        titleHighlight: "para Açaiterias e Restaurantes",
+        subtitle: "Açaí de qualidade, preços competitivos e entrega rápida em <strong>Porto Alegre e região</strong>.",
+        ctaText: "Quero revender",
+        ctaSecondaryText: "Receber catálogo",
+        image: "/assets/reform/hero-estoque.jpg",
+        catalogUrl: "/assets/reform/catalogo.pdf",
     },
     about: {
         overline: "Quem Somos",
