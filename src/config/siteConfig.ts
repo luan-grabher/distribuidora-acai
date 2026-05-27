@@ -2,10 +2,10 @@ export const siteConfig = {
     url: "https://miquinho-distribuidora.vercel.app",
     company: {
         name: "Miquinho Distribuidora",
-        tagline: "Do Coração da Amazônia Para Sua Açaiteria",
+        tagline: "Fornecimento B2B de açaí, sorvetes e insumos",
         description:
-            "Distribuidora de açaí direto do produtor para açaiterias em Porto Alegre. Açaí cremoso premium, embalagens descartáveis e entrega garantida em 24h.",
-        shortDescription: "Açaí direto do produtor para sua açaiteria. Qualidade premium, preços competitivos e entrega em 24h em Porto Alegre.",
+            "Fornecemos açaí, sorvetes e insumos para revenda com logística ágil e preços competitivos. Entregas em Porto Alegre em até 24h.",
+        shortDescription: "Fornecedor B2B: qualidade consistente, entrega rápida e condições comerciais para revenda.",
         whatsapp: "+55 (51) 99493-0575",
         whatsappE164: "+55-51-99493-0575",
         email: "contato@miquinho.com.br",
@@ -21,12 +21,12 @@ export const siteConfig = {
         height: 120,
     },
     colors: {
-        primary: "#4A0080",
-        secondary: "#2E7D32",
+        primary: "#2B0060",
+        secondary: "#1E7A3A",
         accent: "#F9C715",
         background: "#FFFFFF",
-        surface: "#F8F4FF",
-        text: "#1A0030",
+        surface: "#F4F6F9",
+        text: "#0B0B0C",
         textLight: "#FFFFFF",
     },
     nav: {
@@ -43,7 +43,7 @@ export const siteConfig = {
     hero: {
         title: "Seu fornecedor de Açaí e Sorvetes",
         titleHighlight: "para Açaiterias e Restaurantes",
-        subtitle: "Açaí de qualidade, preços competitivos e entrega rápida em <strong>Porto Alegre e região</strong>.",
+        subtitle: "Produtos para revenda com qualidade e entrega em 24h em <strong>Porto Alegre e região</strong>.",
         ctaText: "Quero revender",
         ctaSecondaryText: "Ver catálogo",
         image: "/assets/reform/hero-estoque.jpg",

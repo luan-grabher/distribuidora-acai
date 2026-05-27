@@ -5,6 +5,11 @@ const { colors } = siteConfig
 
 export const theme = createTheme({
   palette: {
+    mode: 'light',
+    contrastThreshold: 3,
+    tonalOffset: 0.1,
+  },
+  palette: {
     primary: {
       main: colors.primary,
       contrastText: colors.textLight,
@@ -48,12 +53,12 @@ export const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: '50px',
+          borderRadius: 8,
           textTransform: 'none',
-          fontWeight: 600,
-          padding: '12px 32px',
-          fontSize: '1rem',
-          transition: 'all 0.3s ease',
+          fontWeight: 700,
+          padding: '10px 24px',
+          fontSize: '0.95rem',
+          transition: 'all 0.2s ease',
         },
       },
     },
@@ -67,6 +72,6 @@ export const theme = createTheme({
     },
   },
   shape: {
-    borderRadius: 12,
+    borderRadius: 8,
   },
 })
