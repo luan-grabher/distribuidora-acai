@@ -6,7 +6,7 @@ Adicionar seção final antes do rodapé com CTA forte e múltiplas ações come
 
 ## Descrição
 - Criar `FinalCTA` com título "Abasteça sua açaiteria com quem entende do negócio." e subtítulo.
-- Botões: `Quero revender`, `Receber catálogo`, `Falar no WhatsApp`.
+- Botões: `Quero revender`, `Visualizar catálogo`, `Falar no WhatsApp`.
 
 ## Arquivos a alterar/criar
 - `src/components/CTA/FinalCTA.tsx` (novo)
