@@ -84,26 +84,6 @@ export default function Contact() {
           </Button>
 
           <Button
-            variant="outlined"
-            size="large"
-            startIcon={<EmailIcon />}
-            href={`mailto:${siteConfig.company.email}`}
-            sx={{
-              borderColor: 'rgba(255,255,255,0.5)',
-              color: siteConfig.colors.textLight,
-              px: 4,
-              '&:hover': {
-                borderColor: siteConfig.colors.textLight,
-                background: 'rgba(255,255,255,0.1)',
-                transform: 'translateY(-2px)',
-              },
-              transition: 'all 0.3s ease',
-            }}
-          >
-            {siteConfig.contact.emailText}
-          </Button>
-
-          <Button
             component={Link}
             href={siteConfig.nav.catalogoHref}
             variant="outlined"

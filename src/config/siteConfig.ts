@@ -150,10 +150,9 @@ export const siteConfig = {
         ],
     },
     contact: {
-        title: "Vamos Crescer Juntos?",
-        subtitle: "Entre em contato e descubra como a Miquinho Distribuidora pode transformar sua açaiteria",
-        whatsappText: "Falar no WhatsApp",
-        emailText: "Enviar E-mail",
+        title: "Abasteça sua açaiteria com quem entende do negócio.",
+        subtitle: "Preços de produtor, logística eficiente e entregas rápidas — fale com nosso comercial.",
+        whatsappText: "Quero revender"
     },
     address: {
         overline: "Onde Estamos",
