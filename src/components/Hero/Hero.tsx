@@ -27,7 +27,7 @@ export default function Hero() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }
-    : { background: `linear-gradient(135deg, ${siteConfig.colors.primary} 0%, #6B0099 40%, #3D006B 70%, #1A0030 100%)` }
+    : { background: `linear-gradient(135deg, ${siteConfig.colors.primary} 0%, #14001d 40%, #3D006B 70%, #1A0030 100%)` }
 
   return (
     <Box
@@ -159,7 +159,7 @@ export default function Hero() {
               }}
             >
               <Image
-                src={siteConfig.hero.image || siteConfig.logo.url}
+                src={siteConfig.logo.url}
                 alt={siteConfig.logo.alt}
                 width={420}
                 height={420}

@@ -14,7 +14,7 @@ export const siteConfig = {
         keywords: ["distribuidora de açaí", "açaí porto alegre", "açaí para açaiteria", "açaí atacado", "fornecedor açaí RS"],
     },
     logo: {
-        url: "/logo-com-espaço.png",
+        url: "/assets/reform/logo-transparente.png",
         alt: "Miquinho Distribuidora Logo",
         width: 120,
         height: 120,
@@ -44,7 +44,7 @@ export const siteConfig = {
         subtitle: "Produtos para revenda com qualidade e entrega rápida em <strong>Porto Alegre e região</strong>.",
         ctaText: "Quero revender",
         ctaSecondaryText: "Ver catálogo",
-        image: "/assets/reform/hero-estoque.jpg",
+        //image: "/assets/reform/logo-transparente.png",
         catalogUrl: "/catalogo",
     },
     b2b: {
