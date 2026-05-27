@@ -48,6 +48,20 @@ export const siteConfig = {
         image: "/assets/reform/hero-estoque.jpg",
         catalogUrl: "/catalogo",
     },
+    b2b: {
+        overline: "Atendemos",
+        title: "Soluções completas para o seu negócio",
+        subtitle: "Atendemos diversos segmentos com embalagens, logística e preços pensados para atacado.",
+        segments: [
+            { label: "Açaiterias", emoji: "🍧" },
+            { label: "Restaurantes", emoji: "🍽️" },
+            { label: "Lancherias", emoji: "🍔" },
+            { label: "Conveniências", emoji: "🛒" },
+            { label: "Deliverys", emoji: "🏍️" },
+            { label: "Mercados", emoji: "🏬" },
+        ],
+        ctaText: "Quero revender",
+    },
     about: {
         overline: "Quem Somos",
         title: "Nossa História",
