@@ -3,7 +3,8 @@ export const siteConfig = {
     company: {
         name: "Miquinho Distribuidora",
         tagline: "Do Coração da Amazônia Para Sua Açaiteria",
-        description: "Distribuidora de açaí direto do produtor para açaiterias em Porto Alegre. Açaí cremoso premium, embalagens descartáveis e entrega garantida em 24h.",
+        description:
+            "Distribuidora de açaí direto do produtor para açaiterias em Porto Alegre. Açaí cremoso premium, embalagens descartáveis e entrega garantida em 24h.",
         shortDescription: "Açaí direto do produtor para sua açaiteria. Qualidade premium, preços competitivos e entrega em 24h em Porto Alegre.",
         whatsapp: "+55 (51) 99493-0575",
         whatsappE164: "+55-51-99493-0575",
@@ -78,7 +79,7 @@ export const siteConfig = {
         overline: "Catálogo",
         title: "Nossos Produtos",
         subtitle: "Linha completa para sua açaiteria",
-        items: [            
+        items: [
             {
                 name: "Açaí Cremoso",
                 description:
@@ -108,7 +109,19 @@ export const siteConfig = {
             //{ name: 'Açaí Polpa Premium', description: 'Polpa pura e cremosa, ideal para servir com frutas e complementos. Textura perfeita e sabor intenso da Amazônia.', emoji: '🫐' },
             //{ name: 'Açaí com Frutas', description: 'Blend especial com frutas selecionadas. Morango, banana e outras frutas tropicais que complementam o sabor único do açaí.', emoji: '🍓' },
             //{ name: 'Granola Premium', description: 'Granola crocante e saborosa, produzida especialmente para complementar seu açaí. Mix com castanhas, aveia e mel.', emoji: '🥣' },
-            //{ name: 'Complementos Variados', description: 'Kit completo com complementos selecionados: paçoca, Nutella, mel, coco ralado e muito mais para diversificar seu cardápio.', emoji: '🍯' },  
+            //{ name: 'Complementos Variados', description: 'Kit completo com complementos selecionados: paçoca, Nutella, mel, coco ralado e muito mais para diversificar seu cardápio.', emoji: '🍯' },
+        ],
+    },
+    proof: {
+        overline: "Nossa Estrutura",
+        title: "Operação preparada para atender sua demanda",
+        subtitle: "Estoque organizado e entrega rápida para açaiterias e restaurantes de Porto Alegre e região.",
+        images: ["/assets/reform/prova-estoque-1.jpg", "/assets/reform/prova-estoque-2.jpg", "/assets/reform/prova-estoque-3.jpg"],
+        captions: ["Estoque refrigerado", "Produtos prontos para entrega", "Estrutura de abastecimento"],
+        metrics: [
+            { value: "Entrega rápida", label: "Porto Alegre e região" },
+            { value: "Estoque ativo", label: "Reposição contínua" },
+            { value: "Atendimento B2B", label: "Açaiterias e restaurantes" },
         ],
     },
     benefits: {
