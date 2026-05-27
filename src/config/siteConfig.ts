@@ -126,39 +126,27 @@ export const siteConfig = {
     },
     benefits: {
         overline: "Diferenciais",
-        title: "Por Que Escolher a Miquinho?",
-        subtitle: "Somos mais que um fornecedor — somos seu parceiro de negócios",
+        title: "Por que comprar da Miquinho?",
+        subtitle: "Soluções pensadas para revendedores: qualidade, margem e logística eficiente.",
         items: [
             {
-                icon: "Agriculture",
-                title: "Produção Própria",
-                description: "Do campo à sua açaiteria. Controlamos toda a cadeia produtiva, garantindo qualidade inigualável.",
-            },
-            {
                 icon: "Verified",
-                title: "Qualidade Garantida",
-                description: "Rigoroso controle de qualidade em cada lote. Certificações e padrões que garantem o melhor produto.",
+                title: "Qualidade consistente",
+                description: "Produção própria com controle rigoroso, lote após lote.",
+                stat: "100%",
             },
             {
                 icon: "AttachMoney",
-                title: "Preços Competitivos",
-                description: "Produtor direto = menor preço. Economize e aumente sua margem de lucro sem sacrificar a qualidade.",
+                title: "Melhor margem",
+                description: "Preços de produtor direto para aumentar sua margem de lucro.",
+                stat: "Preço Competitivo",
             },
-            /*{
+            {
                 icon: "LocalShipping",
-                title: "Entrega Pontual",
-                description: "Logística eficiente com entrega em até 24 horas. Sua açaiteria nunca ficará sem produto.",
-            },
-            {
-                icon: "Inventory",
-                title: "Variedade Completa",
-                description: "Linha completa de produtos para sua açaiteria. Tudo que você precisa em um único fornecedor.",
-            },
-            {
-                icon: "Support",
-                title: "Suporte Dedicado",
-                description: "Equipe de atendimento especializada, sempre pronta para ajudar seu negócio a crescer.",
-            },*/
+                title: "Entrega rápida",
+                description: "Logística local com entregas em até 24 horas em Porto Alegre.",
+                stat: "24h",
+            }
         ],
     },
     contact: {
@@ -178,6 +166,13 @@ export const siteConfig = {
         geoLatitude: -30.0121,
         geoLongitude: -51.0967,
         googleMapsEmbedUrl: "https://www.google.com/maps?q=Av+Frederico+Dihl+4417+Alvorada+RS+94853-250&z=17&output=embed",
+        citiesAttended: [
+            "Porto Alegre",
+            "Alvorada",
+            "Gravataí",
+            "Viamão",
+        ],
+        featuredCities: ["Porto Alegre", "Alvorada"],
     },
     footer: {
         copyright: "© 2024 Miquinho Distribuidora. Todos os direitos reservados.",
