@@ -48,7 +48,7 @@ export default function Benefits() {
           {siteConfig.benefits.items.map((benefit) => {
             const IconComponent = iconMap[benefit.icon]
             return (
-              <Grid item xs={12} sm={6} md={4} lg={4} key={benefit.title}>
+              <Grid key={benefit.title} size={{ xs: 12, sm: 6, md: 4, lg: 4 }}>
                 <Box sx={{ p: 3, borderRadius: 3, background: siteConfig.colors.background, border: `1px solid rgba(74, 0, 128, 0.06)`, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', '&:hover': { transform: 'translateY(-4px)', boxShadow: `0 12px 24px rgba(74, 0, 128, 0.08)`, borderColor: `rgba(74, 0, 128, 0.12)` }, transition: 'all 0.25s ease' }}>
                   <Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>

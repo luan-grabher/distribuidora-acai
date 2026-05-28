@@ -36,7 +36,7 @@ export function B2BSection() {
 
         <Grid container spacing={2}>
           {siteConfig.b2b.segments.map((s) => (
-            <Grid item key={s.label} xs={6} sm={4} md={2}>
+            <Grid key={s.label} size={{ xs: 6, sm: 4, md: 2 }}>
               <Paper
                 elevation={0}
                 sx={{

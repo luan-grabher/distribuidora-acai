@@ -45,6 +45,7 @@ export const siteConfig = {
         ctaText: "Quero revender",
         ctaSecondaryText: "Ver catálogo",
         //image: "/assets/reform/logo-transparente.png",
+        image: null,
         catalogUrl: "/catalogo",
     },
     b2b: {

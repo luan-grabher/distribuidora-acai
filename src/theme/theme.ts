@@ -8,8 +8,6 @@ export const theme = createTheme({
     mode: 'light',
     contrastThreshold: 3,
     tonalOffset: 0.1,
-  },
-  palette: {
     primary: {
       main: colors.primary,
       contrastText: colors.textLight,

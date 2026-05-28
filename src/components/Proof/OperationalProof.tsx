@@ -68,7 +68,7 @@ export function OperationalProof() {
 
         <Grid container spacing={2} sx={{ mb: 3 }}>
           {images.map((src, i) => (
-            <Grid item xs={6} sm={4} md={3} key={src}>
+            <Grid key={src} size={{ xs: 6, sm: 4, md: 3 }}>
               <Box onClick={() => openAt(i)} sx={{ cursor: 'pointer', position: 'relative', width: '100%', height: { xs: 140, sm: 160, md: 180 }, borderRadius: 1, overflow: 'hidden', border: `1px solid rgba(0,0,0,0.06)` }}>
                 <Image src={src} alt={captions[i] ?? `Prova ${i + 1}`} fill sizes="(max-width:600px)50vw,33vw" loading="lazy" style={{ objectFit: 'cover' }} />
                 {captions[i] && (
@@ -83,7 +83,7 @@ export function OperationalProof() {
 
         <Grid container spacing={2} sx={{ mb: 2 }}>
           {metrics.map((m, idx) => (
-            <Grid item xs={12} sm={4} key={idx}>
+            <Grid key={idx} size={{ xs: 12, sm: 4 }}>
               <Box sx={{ textAlign: 'center' }}>
                 <Typography variant="h4" sx={{ color: siteConfig.colors.primary, fontWeight: 800 }}>
                   {m.value}

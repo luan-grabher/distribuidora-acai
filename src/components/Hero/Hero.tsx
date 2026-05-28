@@ -21,7 +21,7 @@ export default function Hero() {
     if (typeof window !== 'undefined') window.open(url, '_blank')
   }
 
-  const backgroundStyle = siteConfig.hero.image
+  const backgroundStyle = siteConfig.hero?.image
     ? {
         backgroundImage: `linear-gradient(180deg, rgba(10,10,10,0.45), rgba(10,10,10,0.45)), url(${siteConfig.hero.image})`,
         backgroundSize: 'cover',
