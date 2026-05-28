@@ -105,10 +105,10 @@ export default function Contact() {
           </Button>
         </Box>
 
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1, cursor: 'pointer' }} onClick={() => window.open(`https://instagram.com/${siteConfig.company.instagram}`, '_blank')}>
           <InstagramIcon sx={{ color: 'rgba(255,255,255,0.6)', fontSize: 20 }} />
           <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.9rem' }}>
-            {siteConfig.company.instagram}
+            @{siteConfig.company.instagram}
           </Typography>
         </Box>
       </Container>

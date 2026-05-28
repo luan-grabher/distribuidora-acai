@@ -8,7 +8,7 @@ export const siteConfig = {
         whatsapp: "+55 (51) 99493-0575",
         whatsappE164: "+55-51-99493-0575",
         email: "contato@miquinho.com.br",
-        instagram: "@miquinhodistribuidora",
+        instagram: "miquinhodistribuidora",
         instagramUrl: "https://www.instagram.com/miquinhodistribuidora",
         operatingHours: "Seg - Sex: 08:00 - 18:00\nSáb: 08:00 - 12:00",
         keywords: ["distribuidora de açaí", "açaí porto alegre", "açaí para açaiteria", "açaí atacado", "fornecedor açaí RS"],

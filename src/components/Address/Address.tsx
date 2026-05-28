@@ -91,7 +91,7 @@ export default function Address() {
                 Atendemos várias nas cidades de Porto Alegre, Alvorada e Viamão.
               </Typography>
 
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.25, mt: 2 }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: 1.25, mt: 2 }}>
                 {citiesAttended.map((c) => {
                   const highlighted = featuredCities.includes(c)
                   return (
