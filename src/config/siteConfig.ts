@@ -111,6 +111,15 @@ export const siteConfig = {
             }
         ],
     },
+    catalogo: {
+        termosEmDestaque: [
+            "açaí",
+            "sorvete",
+            "copo",
+            "cobertura",
+            "paçoca",
+        ],
+    },
     proof: {
         overline: "Nossa Estrutura",
         title: "Operação preparada para atender sua demanda",
