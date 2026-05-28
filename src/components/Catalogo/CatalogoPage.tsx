@@ -87,8 +87,8 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
       <Box
         sx={{
           background: 'linear-gradient(135deg, #4A0080 0%, #7B1FA2 100%)',
-          pt: { xs: 15, md: 20 },
-          pb: { xs: 8, md: 10 },
+          pt: { xs: 12, md: 10 },
+          pb: { xs: 3, md: 4 },
           px: 2,
           textAlign: 'center',
         }}
@@ -97,14 +97,14 @@ export default function CatalogoPage({ itens }: PropsCatalogoPage) {
           variant="h3"
           fontWeight={800}
           color="white"
-          sx={{ fontSize: { xs: '2rem', md: '3rem' }, mb: 1 }}
+          sx={{ fontSize: { xs: '1.6rem', md: '2rem' }, mb: 0.5 }}
         >
           Catálogo
         </Typography>
-        <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.85)', fontWeight: 400 }}>
+        <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.85)', fontWeight: 400, mb: 0.5 }}>
           Escolha os produtos para o seu pedido
         </Typography>
-        <Typography variant="subtitle2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 1 }}>
+        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.75)', mt: 0.5 }}>
           {siteConfig.company.operatingHours.split('\n').map((line, index) => (
             <span key={index}>
               {line}
