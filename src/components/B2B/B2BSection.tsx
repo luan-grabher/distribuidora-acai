@@ -46,7 +46,7 @@ export function B2BSection() {
                   background: 'transparent',
                 }}
               >
-                <Box sx={{ fontSize: 32 }}>{s.emoji}</Box>
+                <Box sx={{ fontSize: 76 }}>{s.emoji}</Box>
                 <Typography sx={{ mt: 1, fontWeight: 600 }}>{s.label}</Typography>
               </Paper>
             </Grid>

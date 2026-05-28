@@ -115,8 +115,8 @@ export const siteConfig = {
         overline: "Nossa Estrutura",
         title: "Operação preparada para atender sua demanda",
         subtitle: "Estoque organizado e entrega rápida para açaiterias e restaurantes de Porto Alegre e região.",
-        images: ["/assets/reform/prova-estoque-1.jpg", "/assets/reform/prova-estoque-2.jpg", "/assets/reform/prova-estoque-3.jpg"],
-        captions: ["Estoque refrigerado", "Produtos prontos para entrega", "Estrutura de abastecimento"],
+        images: ["/assets/reform/freezer-sorvetes.jpeg", "/assets/reform/acai-5l.jpeg", "/assets/reform/sorvetes-1l.jpeg"],
+        captions: ["", "", ""],
         metrics: [
             { value: "Entrega rápida", label: "Porto Alegre e região" },
             { value: "Estoque ativo", label: "Reposição contínua" },
