@@ -88,7 +88,7 @@ export default function Address() {
               </Typography>
 
               <Typography variant="body2" sx={{ color: siteConfig.colors.text, opacity: 0.8 }}>
-                Atendemos várias nas cidades de Porto Alegre, Alvorada e Viamão.
+                Atendemos nas cidades de Porto Alegre, Alvorada e Viamão.
               </Typography>
 
               <Box sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: 1.25, mt: 2 }}>
